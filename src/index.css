@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .center-abs {
+    @apply absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2;
+  }
+  .center-y-abs {
+    @apply absolute top-1/2 transform -translate-y-1/2;
+  }
+  .center-x-abs {
+    @apply absolute left-1/2 transform -translate-x-1/2;
+  }
+  .paste-type {
+    @apply w-full relative flex justify-center items-center w-[80%];
+  }
+  .paste-type-text {
+    @apply text-xl font-medium z-10 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2;
+  }
+  .paste-box {
+    @apply grow w-[90%];
+  }
+  .paste-type-switcher {
+    @apply flex flex-col justify-center items-center cursor-pointer px-2 py-1;
+  }
+}
