@@ -10,6 +10,8 @@ module.exports = {
         "app-bg": "#F2E1E1",
         "primary-color": "#F2E1E1",
         "primary-light": "#F3CFCF",
+        "primary-dark": "#DAAEAE",
+        "standout-bg": "#F8FFAB",
         "active-color": "#FFDADA",
         "btn-color": "#EAB4CE",
       },

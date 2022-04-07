@@ -12,6 +12,9 @@
   .center-x-abs {
     @apply absolute left-1/2 transform -translate-x-1/2;
   }
+  .upload-container {
+    @apply flex flex-col justify-between relative items-center lg:gap-5 gap-3 pt-3 pb-8 px-3 bg-base-color xl:drop-shadow-xl w-full lg:h-screen h-[90%] rounded-3xl lg:rounded-none;
+  }
   .paste-type {
     @apply w-full cursor-pointer relative flex justify-center items-center w-[80%];
   }

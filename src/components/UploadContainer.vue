@@ -4,7 +4,7 @@
       showContainer == true
         ? 'animate__animated animate__fadeInUp animate__faster'
         : 'hidden lg:flex',
-      'upload-container flex flex-col justify-between relative items-center lg:gap-5 gap-3 pt-3 pb-8 px-3 bg-base-color xl:drop-shadow-xl w-full lg:h-screen h-[90%] rounded-3xl lg:rounded-none',
+      'upload-container',
     ]"
   >
     <div
@@ -31,7 +31,7 @@
             'w-full',
           ]"
         />
-        <p class="paste-type-text group-hover:scale-90">Images</p>
+        <p class="paste-type-text">Images</p>
       </div>
 
       <div class="paste-type group" @click="activePasteBox = 'files'">
@@ -43,9 +43,7 @@
             'w-full',
           ]"
         />
-        <p class="paste-type-text translate-y-[1px] group-hover:scale-105">
-          Files
-        </p>
+        <p class="paste-type-text translate-y-[1px]">Files</p>
       </div>
 
       <div class="paste-type group" @click="activePasteBox = 'code'">
@@ -68,7 +66,7 @@
         class="absolute flex flex-col items-center left-[-14px] w-[110%] h-full z-10"
       >
         <hr
-          class="h-[8px] w-[40%] bg-primary-light border-none rounded-full my-2"
+          class="h-[8px] w-[40%] bg-primary-light border-none rounded-full mb-2"
         />
         <div v-if="activePasteBox == 'text'" class="paste-box text-paste">
           <textarea
@@ -88,10 +86,10 @@
             class="w-full h-full outline-none p-2 font-light bg-primary-light rounded-2xl"
           ></textarea>
         </div>
-        <div
+        <image-uploader
+          :beginImageUpload="beginImageUpload"
           v-if="activePasteBox == 'images'"
-          class="paste-box image-paste"
-        ></div>
+        />
         <button
           class="z-5 rounded-xl hover:rounded-full bg-app-bg absolute top-8 right-6 p-3 drop-shadow"
           v-if="activePasteBox == 'code' || activePasteBox == 'text'"
@@ -105,7 +103,7 @@
         </button>
         <button
           @click="upload"
-          class="bg-btn-color px-10 py-2 my-2 rounded-full font-medium"
+          class="bg-btn-color px-10 py-2 mb-5 mt-2 rounded-full font-medium lg:hover:saturate-150"
         >
           Upload
         </button>
@@ -125,27 +123,47 @@
 
 <script>
 import { uploadTextBasedPaste } from "../supabase/index.js";
+import ImageUploader from "./uploaders/ImageUploader.vue";
 export default {
+  components: {
+    ImageUploader,
+  },
   data() {
     return {
       activePasteBox: "text",
       pasteText: "",
       pasteCode: "",
+      beginImageUpload: false,
     };
   },
   methods: {
     async upload() {
-      this.$emit("toggleContainer");
       if (this.activePasteBox == "text") {
         const paste = {
           type: "text",
           textContent: this.pasteText,
         };
         const { data, error } = await uploadTextBasedPaste(paste);
+        this.pasteText = "";
         if (error) {
           alert(error.message);
           return;
         }
+      }
+      if (this.activePasteBox == "code") {
+        const paste = {
+          type: "code",
+          textContent: this.pasteCode,
+        };
+        const { data, error } = await uploadTextBasedPaste(paste);
+        this.pasteCode = "";
+        if (error) {
+          alert(error.message);
+          return;
+        }
+      }
+      if (this.activePasteBox == "images") {
+        this.beginImageUpload = true;
       }
     },
     pasteClipboard() {
@@ -180,7 +198,7 @@ export default {
   position: absolute;
   background: #f2e1e1;
   width: 105%;
-  top: 10px;
+  top: 5px;
   left: 50%;
   transform: translateX(-50%);
   height: 100%;
@@ -192,7 +210,7 @@ export default {
   position: absolute;
   background: #ffdada;
   width: 110%;
-  top: 20px;
+  top: 10px;
   left: 50%;
   transform: translateX(-50%);
   height: 100%;

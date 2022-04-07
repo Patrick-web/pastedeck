@@ -19,3 +19,19 @@ export async function uploadTextBasedPaste(paste) {
 
   return { data, error };
 }
+
+export async function uploadImagePaste(paste) {
+  const { data, error } = await supabase.storage
+    .from("paste-files-bucket")
+    .upload(`images/${Date.now()}`, paste, {
+      cacheControl: "3600",
+      upsert: false,
+    });
+  if (data) {
+    const { publicURL, error: perr } = supabase.storage
+      .from("paste-files-bucket")
+      .getPublicUrl(data.Key);
+    console.log(publicURL);
+    console.log(perr);
+  }
+}

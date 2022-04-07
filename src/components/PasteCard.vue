@@ -23,7 +23,7 @@
     />
     <button
       @click="copyToClipboard"
-      v-if="paste.paste_type == 'text' || paste.type == 'code'"
+      v-if="paste.paste_type == 'text' || paste.paste_type == 'code'"
       :class="[
         copied ? 'bg-green-200' : 'bg-app-bg',
         'z-5 rounded-xl hover:rounded-full absolute lg:top-1 lg:bottom-auto bottom-2 right-2 p-3',
