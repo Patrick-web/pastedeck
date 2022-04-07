@@ -2,6 +2,9 @@ module.exports = {
   content: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx}"],
   theme: {
     extend: {
+      rotate: {
+        360: "360deg",
+      },
       colors: {
         "base-color": "#FFFAFA",
         "app-bg": "#F2E1E1",

@@ -9,7 +9,7 @@
       <div
         :class="[
           type == 'all' ? 'bg-active-color lg:group-hover:bg-white' : '',
-          'px-5 py-2 rounded-full gap-2 w-full',
+          'px-5 py-2 rounded-full gap-2',
         ]"
       >
         <img class="w-[20px]" src="../assets/timeline-icon.svg" />

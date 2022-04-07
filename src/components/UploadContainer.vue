@@ -4,45 +4,65 @@
       showContainer == true
         ? 'animate__animated animate__fadeInUp animate__faster'
         : 'hidden lg:flex',
-      'upload-container flex flex-col justify-between items-center gap-5 py-7 px-5 bg-base-color xl:drop-shadow-xl w-full lg:h-screen h-[90%] rounded-3xl lg:rounded-none',
+      'upload-container flex flex-col justify-between relative items-center lg:gap-5 gap-3 pt-3 pb-8 px-3 bg-base-color xl:drop-shadow-xl w-full lg:h-screen h-[90%] rounded-3xl lg:rounded-none',
     ]"
   >
-    <div class="options-wrapper place-items-center grid grid-cols-2 gap-5">
-      <div class="paste-type" @click="activePasteBox = 'text'">
+    <div
+      class="options-wrapper flex place-items-center lg:grid lg:grid-cols-2 lg:gap-5 gap-1"
+    >
+      <div class="paste-type group" @click="activePasteBox = 'text'">
         <img
           src="../assets/text-clip.svg"
-          :class="[activePasteBox == 'text' ? 'saturate-200' : '', 'w-full']"
+          :class="[
+            activePasteBox == 'text' ? 'saturate-200' : '',
+            'group-hover:rotate-180',
+            'w-full',
+          ]"
         />
         <p class="paste-type-text">Text</p>
       </div>
 
-      <div class="paste-type" @click="activePasteBox = 'images'">
+      <div class="paste-type group" @click="activePasteBox = 'images'">
         <img
           src="../assets/images-clip.svg"
-          :class="[activePasteBox == 'images' ? 'saturate-200' : '', 'w-full']"
+          :class="[
+            activePasteBox == 'images' ? 'saturate-200' : '',
+            'group-hover:scale-105',
+            'w-full',
+          ]"
         />
-        <p class="paste-type-text">Images</p>
+        <p class="paste-type-text group-hover:scale-90">Images</p>
       </div>
 
-      <div class="paste-type" @click="activePasteBox = 'files'">
+      <div class="paste-type group" @click="activePasteBox = 'files'">
         <img
           src="../assets/files-clip.svg"
-          :class="[activePasteBox == 'files' ? 'saturate-200' : '', 'w-full']"
+          :class="[
+            activePasteBox == 'files' ? 'saturate-200' : '',
+            'lg:group-hover:rotate-90 lg:group-hover:translate-x-2 lg:group-hover:translate-y-3',
+            'w-full',
+          ]"
         />
-        <p class="paste-type-text translate-y-[1px]">Files</p>
+        <p class="paste-type-text translate-y-[1px] group-hover:scale-105">
+          Files
+        </p>
       </div>
 
-      <div class="paste-type" @click="activePasteBox = 'code'">
+      <div class="paste-type group" @click="activePasteBox = 'code'">
         <img
           src="../assets/code-clip.svg"
-          :class="[activePasteBox == 'code' ? 'saturate-200' : '', 'w-full']"
+          :class="[
+            activePasteBox == 'code' ? 'saturate-200' : '',
+            'group-hover:rotate-90',
+            'w-full',
+          ]"
         />
         <p class="paste-type-text">Code</p>
       </div>
     </div>
 
     <div
-      class="paste-input-wrapper w-[90%] min-h-[100px] relative p-5 mb-2 bg-[#f4e4e4] grow rounded-[20px]"
+      class="paste-input-wrapper absolute w-[90%] min-h-[100px] relative p-5 mb-2 bg-[#f4e4e4] grow rounded-[20px]"
     >
       <div
         class="absolute flex flex-col items-center left-[-14px] w-[110%] h-full z-10"
@@ -52,19 +72,41 @@
         />
         <div v-if="activePasteBox == 'text'" class="paste-box text-paste">
           <textarea
-            class="w-full h-full outline-none p-5 font-light bg-primary-light rounded-2xl"
+            v-model="pasteText"
+            placeholder="paste or write text..."
+            class="w-full h-full outline-none p-2 font-light bg-primary-light rounded-2xl"
           ></textarea>
         </div>
         <div
           v-if="activePasteBox == 'files'"
           class="paste-box file-paste"
         ></div>
-        <div v-if="activePasteBox == 'code'" class="paste-box code-paste"></div>
+        <div v-if="activePasteBox == 'code'" class="paste-box code-paste">
+          <textarea
+            v-model="pasteCode"
+            placeholder="paste or write code..."
+            class="w-full h-full outline-none p-2 font-light bg-primary-light rounded-2xl"
+          ></textarea>
+        </div>
         <div
           v-if="activePasteBox == 'images'"
           class="paste-box image-paste"
         ></div>
-        <button class="bg-btn-color px-10 py-2 my-2 rounded-full font-medium">
+        <button
+          class="z-5 rounded-xl hover:rounded-full bg-app-bg absolute top-8 right-6 p-3 drop-shadow"
+          v-if="activePasteBox == 'code' || activePasteBox == 'text'"
+          @click="pasteClipboard"
+        >
+          <img
+            class="w-[20px]"
+            src="../assets/paste-icon.png"
+            alt="paste icon"
+          />
+        </button>
+        <button
+          @click="upload"
+          class="bg-btn-color px-10 py-2 my-2 rounded-full font-medium"
+        >
           Upload
         </button>
       </div>
@@ -82,11 +124,45 @@
 </template>
 
 <script>
+import { uploadTextBasedPaste } from "../supabase/index.js";
 export default {
   data() {
     return {
       activePasteBox: "text",
+      pasteText: "",
+      pasteCode: "",
     };
+  },
+  methods: {
+    async upload() {
+      this.$emit("toggleContainer");
+      if (this.activePasteBox == "text") {
+        const paste = {
+          type: "text",
+          textContent: this.pasteText,
+        };
+        const { data, error } = await uploadTextBasedPaste(paste);
+        if (error) {
+          alert(error.message);
+          return;
+        }
+      }
+    },
+    pasteClipboard() {
+      navigator.clipboard.readText().then(
+        (clipText) => {
+          if (this.activePasteBox == "text") {
+            this.pasteText = clipText.trim();
+          }
+          if (this.activePasteBox == "code") {
+            this.pasteCode = clipText;
+          }
+        },
+        (err) => {
+          alert(err);
+        }
+      );
+    },
   },
   props: {
     showContainer: Boolean,

@@ -12,12 +12,16 @@
         v-on:toggleContainer="showUploadContainer = !showUploadContainer"
       />
     </div>
-    <div class="w-full h-full px-0 lg:px-10 flex flex-col items-center">
+    <div
+      ref="pastesWrapper"
+      class="w-full h-full px-0 lg:px-10 flex flex-col items-center"
+    >
       <paste-type-switcher />
       <div
+        ref="pastesWrapper"
         class="w-full flex flex-col gap-4 grow pt-5 pb-40 px-5 overflow-y-auto"
       >
-        <paste-card :paste="pc" />
+        <paste-card v-for="paste in pastes" :key="paste.id" :paste="paste" />
       </div>
     </div>
   </div>
@@ -27,20 +31,46 @@
 import UploadContainer from "./components/UploadContainer.vue";
 import PasteTypeSwitcher from "./components/PasteTypeSwitcher.vue";
 import PasteCard from "./components/PasteCard.vue";
+import { supabase, getAllPastes } from "./supabase/index.js";
 export default {
   data() {
     return {
       showUploadContainer: false,
-      pc: {
-        type: "text",
-        content: "loredckdc  cjsdbc cd dhcbsdc dscb",
-      },
+      pastes: [],
     };
+  },
+  methods: {
+    listenOnPastes() {
+      console.log("listening");
+      supabase
+        .from("pastes")
+        .on("INSERT", async (payload) => {
+          console.log("Added something");
+          this.pastes.unshift(payload.new);
+          this.$refs.pastesWrapper.scrollTo(0, 0);
+          this.$refs.pastesWrapper.scrollTo(0, 0);
+          console.log(this.$refs.pastesWrapper.scrollTop);
+        })
+        .subscribe();
+    },
   },
   components: {
     UploadContainer,
     PasteTypeSwitcher,
     PasteCard,
+  },
+  async mounted() {
+    try {
+      const { error, pastes } = await getAllPastes();
+      if (error) {
+        alert(error.message);
+      } else {
+        this.pastes = pastes;
+      }
+    } catch (error) {
+      alert(error);
+    }
+    this.listenOnPastes();
   },
 };
 </script>
@@ -49,7 +79,7 @@ export default {
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap");
 @import url("https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css");
 * {
-  transition: 0.2s ease-in-out;
+  transition: 0.3s ease-in-out;
 }
 img {
   max-width: initial !important;

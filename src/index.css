@@ -13,10 +13,10 @@
     @apply absolute left-1/2 transform -translate-x-1/2;
   }
   .paste-type {
-    @apply w-full relative flex justify-center items-center w-[80%];
+    @apply w-full cursor-pointer relative flex justify-center items-center w-[80%];
   }
   .paste-type-text {
-    @apply text-xl font-medium z-10 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2;
+    @apply text-sm lg:text-base font-normal z-10 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2;
   }
   .paste-box {
     @apply grow w-[90%];
