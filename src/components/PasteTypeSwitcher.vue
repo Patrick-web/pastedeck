@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex lg:gap-10 lg:rounded-b-[30px] bg-base-color justify-evenly w-screen lg:w-auto overflow-hidden lg:relative fixed left-0 bottom-0 z-20"
+    class="flex lg:gap-10 lg:min-h-[70px] lg:rounded-b-[30px] bg-base-color justify-evenly w-screen lg:w-auto overflow-hidden lg:relative fixed left-0 bottom-0 z-20"
   >
     <div
       @click="type = 'all'"
