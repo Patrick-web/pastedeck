@@ -12,14 +12,11 @@
         v-on:toggleContainer="showUploadContainer = !showUploadContainer"
       />
     </div>
-    <div
-      ref="pastesWrapper"
-      class="w-full h-full px-0 lg:px-10 flex flex-col items-center"
-    >
+    <div class="w-full h-full px-0 lg:px-10 flex flex-col items-center">
       <paste-type-switcher />
       <div
         ref="pastesWrapper"
-        class="w-full flex flex-col gap-4 grow pt-5 pb-40 px-5 overflow-y-auto"
+        class="pastesWrapper w-full flex flex-col gap-4 grow pt-5 pb-40 px-5 overflow-y-auto"
       >
         <paste-card v-for="paste in pastes" :key="paste.id" :paste="paste" />
       </div>
@@ -89,5 +86,32 @@ img {
 }
 #app {
   font-family: "Roboto", sans-serif;
+  --base-color: #fffafa;
+  --app-bg: #f2e1e1;
+  --primary-color: #f2e1e1;
+  --primary-light: #f3cfcf;
+  --active-color: #ffdada;
+  --btn-color: #eab4ce;
+}
+::-webkit-scrollbar {
+  width: 4px;
+  border-radius: 20px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: var(--active-color);
+  border-radius: 20px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: var(--base-color);
+  border-radius: 20px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 </style>

@@ -5,8 +5,12 @@
       'paste-card rounded-xl p-5 relative',
     ]"
   >
-    <p v-if="paste.paste_type == 'text'" class="font-light">
-      {{ paste.text_content }}
+    <p v-if="paste.paste_type == 'text'" class="font-light break-all">
+      {{
+        paste.text_content.length > 200
+          ? paste.text_content.substring(0, 200) + "...."
+          : paste.text_content
+      }}
     </p>
     <pre v-if="paste.paste_type == 'code'" class="font-light">{{
       paste.text_content
