@@ -3,7 +3,8 @@ module.exports = {
   theme: {
     extend: {
       rotate: {
-        360: "360deg",
+        145: "145deg",
+        208: "208deg",
       },
       colors: {
         "base-color": "#FFFAFA",

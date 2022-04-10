@@ -20,18 +20,62 @@ export async function uploadTextBasedPaste(paste) {
   return { data, error };
 }
 
-export async function uploadImagePaste(paste) {
+export async function uploadImagePaste(imageFile) {
   const { data, error } = await supabase.storage
     .from("paste-files-bucket")
-    .upload(`images/${Date.now()}`, paste, {
+    .upload(`images/${imageFile.name}_${Date.now()}`, imageFile, {
       cacheControl: "3600",
       upsert: false,
     });
-  if (data) {
-    const { publicURL, error: perr } = supabase.storage
-      .from("paste-files-bucket")
-      .getPublicUrl(data.Key);
-    console.log(publicURL);
-    console.log(perr);
+  if (error) return { error };
+  const imageUrl = `https://nulsuzurtwplzkhfzxce.supabase.co/storage/v1/object/public/${data.Key}`;
+  const { data: newPaste, nerror } = await supabase.from("pastes").insert([
+    {
+      paste_type: "images",
+      text_content: imageFile.name,
+      file_name: imageFile.name,
+      file_type: "image",
+      file_url: imageUrl,
+      file_size: Math.round((imageFile.size / 1e6) * 10) / 10,
+    },
+  ]);
+
+  return { data: newPaste, error: nerror };
+}
+function formatBytes(bytes, decimals = 2) {
+  if (bytes === 0) return "0 Bytes";
+
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
+}
+
+export async function uploadFilePaste(file) {
+  const { data, error } = await supabase.storage
+    .from("paste-files-bucket")
+    .upload(`files/${file.name}_${Date.now()}`, file, {
+      cacheControl: "3600",
+      upsert: false,
+    });
+  if (error) {
+    console.log(error.message);
+    return { error };
   }
+  const fileUrl = `https://nulsuzurtwplzkhfzxce.supabase.co/storage/v1/object/public/${data.Key}`;
+  const { data: newPaste, nerror } = await supabase.from("pastes").insert([
+    {
+      paste_type: "file",
+      text_content: file.name,
+      file_name: file.name,
+      file_type: file.type,
+      file_url: fileUrl,
+      file_size: formatBytes(file.size),
+    },
+  ]);
+
+  return { data: newPaste, error: nerror };
 }

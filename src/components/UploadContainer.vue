@@ -27,7 +27,7 @@
           src="../assets/images-clip.svg"
           :class="[
             activePasteBox == 'images' ? 'saturate-200' : '',
-            'group-hover:scale-105',
+            'group-hover:rotate-145',
             'w-full',
           ]"
         />
@@ -39,11 +39,15 @@
           src="../assets/files-clip.svg"
           :class="[
             activePasteBox == 'files' ? 'saturate-200' : '',
-            'lg:group-hover:rotate-90 lg:group-hover:translate-x-2 lg:group-hover:translate-y-3',
+            'lg:group-hover:rotate-208 lg:group-hover:-translate-x-2 lg:group-hover:translate-y-3',
             'w-full',
           ]"
         />
-        <p class="paste-type-text translate-y-[1px]">Files</p>
+        <p
+          class="paste-type-text translate-y-[1px] group-hover:-translate-y-[5px]"
+        >
+          Files
+        </p>
       </div>
 
       <div class="paste-type group" @click="activePasteBox = 'code'">
@@ -75,10 +79,10 @@
             class="w-full h-full outline-none p-2 font-light bg-primary-light rounded-2xl"
           ></textarea>
         </div>
-        <div
+        <file-uploader
           v-if="activePasteBox == 'files'"
-          class="paste-box file-paste"
-        ></div>
+          :beginFileUpload="beginFileUpload"
+        />
         <div v-if="activePasteBox == 'code'" class="paste-box code-paste">
           <textarea
             v-model="pasteCode"
@@ -124,16 +128,19 @@
 <script>
 import { uploadTextBasedPaste } from "../supabase/index.js";
 import ImageUploader from "./uploaders/ImageUploader.vue";
+import FileUploader from "./uploaders/FileUploader.vue";
 export default {
   components: {
     ImageUploader,
+    FileUploader,
   },
   data() {
     return {
       activePasteBox: "text",
       pasteText: "",
       pasteCode: "",
-      beginImageUpload: false,
+      beginImageUpload: 1,
+      beginFileUpload: 1,
     };
   },
   methods: {
@@ -163,7 +170,10 @@ export default {
         }
       }
       if (this.activePasteBox == "images") {
-        this.beginImageUpload = true;
+        this.beginImageUpload = Math.random();
+      }
+      if (this.activePasteBox == "files") {
+        this.beginFileUpload = Math.random();
       }
     },
     pasteClipboard() {

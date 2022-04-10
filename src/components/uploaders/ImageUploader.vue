@@ -3,10 +3,10 @@
     <progress-bar :current="uploadedCount" :total="selectedImages.length" />
   </div>
   <div
-    class="paste-box image-paste flex flex-wrap gap-2 max-h-full overflow-y-auto"
+    class="paste-box image-paste p-3 gap-3 grid grid-cols-2 max-h-full overflow-y-auto"
   >
     <button
-      class="relative rounded-3xl bg-btn-color flex justify-center items-center w-[48%] h-[120px] group lg:hover:saturate-150 lg:hover:rounded-xl"
+      class="relative rounded-3xl bg-btn-color flex justify-center items-center w-full h-[120px] group lg:hover:saturate-150 lg:hover:rounded-xl"
     >
       <input
         ref="imageInput"
@@ -26,7 +26,7 @@
         v-for="(preview, index) in imagePreviews"
         :key="index"
         @click="expandedImage = preview"
-        class="group relative w-[48%] h-[120px] overflow-hidden bg-primary-light rounded-2xl px-2 grid place-items-center"
+        class="group relative w-full h-[120px] overflow-hidden bg-primary-light rounded-2xl px-2 grid place-items-center"
       >
         <img
           :src="preview"
@@ -73,11 +73,13 @@ export default {
   methods: {
     showImagePreviews() {
       const files = this.$refs.imageInput.files;
+      console.log(files[0]);
       if (!files[0]) return;
       this.selectedImages = Array.from(files);
       Array.from(files).forEach((file) => {
         this.imagePreviews.unshift(URL.createObjectURL(file));
       });
+      this.imagePreviews = [...this.imagePreviews];
     },
     removeImage(index) {
       this.imagePreviews.splice(index, 1);
@@ -87,9 +89,14 @@ export default {
       this.uploading = true;
       for (const imagefile of this.selectedImages) {
         await uploadImagePaste(imagefile);
+        this.imagePreviews.shift();
         this.uploadedCount += 1;
       }
-      this.uploading = false;
+      setTimeout(() => {
+        this.uploading = false;
+        this.selectedImages = [];
+        this.uploadedCount = 0;
+      }, 2000);
     },
   },
   watch: {
@@ -99,7 +106,7 @@ export default {
     },
   },
   props: {
-    beginImageUpload: Boolean,
+    beginImageUpload: Number,
   },
 };
 </script>

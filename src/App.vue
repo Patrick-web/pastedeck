@@ -18,7 +18,11 @@
         ref="pastesWrapper"
         class="pastesWrapper w-full flex flex-col gap-4 grow pt-5 pb-40 px-5 overflow-y-auto"
       >
-        <paste-card v-for="paste in pastes" :key="paste.id" :paste="paste" />
+        <transition-group
+          enter-active-class="animate__animated animate__lightSpeedInLeft"
+        >
+          <paste-card v-for="paste in pastes" :key="paste.id" :paste="paste" />
+        </transition-group>
       </div>
     </div>
   </div>
@@ -38,15 +42,11 @@ export default {
   },
   methods: {
     listenOnPastes() {
-      console.log("listening");
       supabase
         .from("pastes")
         .on("INSERT", async (payload) => {
-          console.log("Added something");
           this.pastes.unshift(payload.new);
           this.$refs.pastesWrapper.scrollTo(0, 0);
-          this.$refs.pastesWrapper.scrollTo(0, 0);
-          console.log(this.$refs.pastesWrapper.scrollTop);
         })
         .subscribe();
     },
@@ -57,6 +57,7 @@ export default {
     PasteCard,
   },
   async mounted() {
+    console.log(this.$refs.pastesWrapper.scrollTop);
     try {
       const { error, pastes } = await getAllPastes();
       if (error) {
@@ -92,6 +93,7 @@ img {
   --primary-light: #f3cfcf;
   --active-color: #ffdada;
   --btn-color: #eab4ce;
+  --standout-bg: #f8ffab;
 }
 ::-webkit-scrollbar {
   width: 4px;
