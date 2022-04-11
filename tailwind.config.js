@@ -4,7 +4,7 @@ module.exports = {
     extend: {
       rotate: {
         145: "145deg",
-        208: "208deg",
+        208: "209deg",
       },
       colors: {
         "base-color": "#FFFAFA",

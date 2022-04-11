@@ -2,7 +2,7 @@
   <div
     :class="[
       copied ? 'bg-green-300' : 'bg-base-color',
-      'paste-card rounded-xl px-5 py-2 relative flex flex-col',
+      'paste-card rounded-xl px-5 py-5 relative flex flex-col',
     ]"
   >
     <p v-if="paste.paste_type == 'text'" class="font-light break-all">
@@ -119,7 +119,7 @@
       <div
         :class="[
           paste.paste_type == 'image' ? '' : 'animate__fadeInDown',
-          'overflow-y-auto max-h-full w-[90%] px-5 bg-white animate__animated animate__faster',
+          'overflow-y-auto rounded-xl max-h-full w-[90%] px-5 bg-white animate__animated animate__faster',
         ]"
       >
         <p v-if="paste.paste_type == 'text'" class="font-light break-all">

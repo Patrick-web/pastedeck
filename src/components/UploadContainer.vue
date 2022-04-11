@@ -39,7 +39,7 @@
           src="../assets/files-clip.svg"
           :class="[
             activePasteBox == 'files' ? 'saturate-200' : '',
-            'lg:group-hover:rotate-208 lg:group-hover:-translate-x-2 lg:group-hover:translate-y-3',
+            'group-hover:rotate-208 group-hover:-translate-x-2 group-hover:translate-y-3',
             'w-full',
           ]"
         />
@@ -67,12 +67,16 @@
       class="paste-input-wrapper absolute w-[90%] min-h-[100px] relative p-5 mb-2 bg-[#f4e4e4] grow rounded-[20px]"
     >
       <div
-        class="absolute flex flex-col items-center left-[-14px] w-[110%] h-full z-10"
+        class="absolute flex flex-col items-center left-[-14px] w-[110%] px-3 h-full z-10"
       >
         <hr
-          class="h-[8px] w-[40%] bg-primary-light border-none rounded-full mb-2"
+          class="h-[8px] w-[40%] hidden bg-primary-light border-none rounded-full mb-2"
         />
-        <div v-if="activePasteBox == 'text'" class="paste-box text-paste">
+        <div
+          v-if="activePasteBox == 'text'"
+          class="paste-box text-paste flex flex-col items-center gap-2"
+        >
+          <loader v-if="uploading" />
           <textarea
             v-model="pasteText"
             placeholder="paste or write text..."
@@ -83,7 +87,11 @@
           v-if="activePasteBox == 'files'"
           :beginFileUpload="beginFileUpload"
         />
-        <div v-if="activePasteBox == 'code'" class="paste-box code-paste">
+        <div
+          v-if="activePasteBox == 'code'"
+          class="paste-box code-paste flex flex-col items-center gap-2"
+        >
+          <loader v-if="uploading" />
           <textarea
             v-model="pasteCode"
             placeholder="paste or write code..."
@@ -129,10 +137,12 @@
 import { uploadTextBasedPaste } from "../supabase/index.js";
 import ImageUploader from "./uploaders/ImageUploader.vue";
 import FileUploader from "./uploaders/FileUploader.vue";
+import Loader from "../components/reusables/Loader.vue";
 export default {
   components: {
     ImageUploader,
     FileUploader,
+    Loader,
   },
   data() {
     return {
@@ -141,29 +151,34 @@ export default {
       pasteCode: "",
       beginImageUpload: 1,
       beginFileUpload: 1,
+      uploading: false,
     };
   },
   methods: {
     async upload() {
       if (this.activePasteBox == "text") {
+        this.uploading = true;
         const paste = {
           type: "text",
           textContent: this.pasteText,
         };
         const { data, error } = await uploadTextBasedPaste(paste);
         this.pasteText = "";
+        this.uploading = false;
         if (error) {
           alert(error.message);
           return;
         }
       }
       if (this.activePasteBox == "code") {
+        this.uploading = true;
         const paste = {
           type: "code",
           textContent: this.pasteCode,
         };
         const { data, error } = await uploadTextBasedPaste(paste);
         this.pasteCode = "";
+        this.uploading = false;
         if (error) {
           alert(error.message);
           return;

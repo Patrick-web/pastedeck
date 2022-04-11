@@ -22,7 +22,7 @@
     @apply text-sm lg:text-base font-normal z-10 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2;
   }
   .paste-box {
-    @apply grow w-[90%];
+    @apply grow w-full;
   }
   .paste-type-switcher {
     @apply flex flex-col justify-center items-center cursor-pointer px-2 py-1;
