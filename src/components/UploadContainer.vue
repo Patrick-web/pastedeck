@@ -95,7 +95,7 @@
           v-if="activePasteBox == 'images'"
         />
         <button
-          class="z-5 rounded-xl hover:rounded-full bg-app-bg absolute top-8 right-6 p-3 drop-shadow"
+          class="z-5 rounded-xl hover:rounded-[40px] bg-app-bg absolute top-8 right-6 p-3 drop-shadow"
           v-if="activePasteBox == 'code' || activePasteBox == 'text'"
           @click="pasteClipboard"
         >
@@ -107,7 +107,7 @@
         </button>
         <button
           @click="upload"
-          class="bg-btn-color px-10 py-2 mb-5 mt-2 rounded-full font-medium lg:hover:saturate-150"
+          class="bg-btn-color px-10 py-2 mb-5 mt-2 rounded-[40px] font-medium hover:rounded-xl lg:hover:saturate-150"
         >
           Upload
         </button>

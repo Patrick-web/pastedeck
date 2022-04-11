@@ -23,7 +23,7 @@ export async function uploadTextBasedPaste(paste) {
 export async function uploadImagePaste(imageFile) {
   const { data, error } = await supabase.storage
     .from("paste-files-bucket")
-    .upload(`images/${imageFile.name}_${Date.now()}`, imageFile, {
+    .upload(`images/${Date.now()}_${imageFile.name}`, imageFile, {
       cacheControl: "3600",
       upsert: false,
     });
@@ -57,7 +57,7 @@ function formatBytes(bytes, decimals = 2) {
 export async function uploadFilePaste(file) {
   const { data, error } = await supabase.storage
     .from("paste-files-bucket")
-    .upload(`files/${file.name}_${Date.now()}`, file, {
+    .upload(`files/${Date.now()}_${file.name}`, file, {
       cacheControl: "3600",
       upsert: false,
     });

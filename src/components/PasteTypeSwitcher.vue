@@ -12,7 +12,13 @@
           'px-5 py-2 rounded-full gap-2',
         ]"
       >
-        <img class="w-[20px]" src="../assets/timeline-icon.svg" />
+        <img
+          :class="[
+            type == 'all' ? 'animate__animated animate__swing' : '',
+            'w-[20px] lg:group-hover:animate-bounce',
+          ]"
+          src="../assets/timeline-icon.svg"
+        />
       </div>
       <p>All</p>
     </div>
@@ -27,7 +33,13 @@
           'px-5 py-2 rounded-full gap-2',
         ]"
       >
-        <img class="w-[20px]" src="../assets/image-icon.svg" />
+        <img
+          :class="[
+            type == 'image' ? 'animate__animated animate__swing' : '',
+            'w-[20px] lg:group-hover:animate-bounce',
+          ]"
+          src="../assets/image-icon.svg"
+        />
       </div>
       <p>Images</p>
     </div>
@@ -42,7 +54,13 @@
           'px-5 py-2 rounded-full gap-2',
         ]"
       >
-        <img class="w-[20px]" src="../assets/text-icon.svg" />
+        <img
+          :class="[
+            type == 'text' ? 'animate__animated animate__swing' : '',
+            'w-[20px] lg:group-hover:animate-bounce',
+          ]"
+          src="../assets/text-icon.svg"
+        />
       </div>
       <p>Text</p>
     </div>
@@ -57,7 +75,13 @@
           'px-5 py-2 rounded-full gap-2',
         ]"
       >
-        <img class="w-[20px]" src="../assets/code-icon.svg" />
+        <img
+          :class="[
+            type == 'code' ? 'animate__animated animate__swing' : '',
+            'w-[20px] lg:group-hover:animate-bounce',
+          ]"
+          src="../assets/code-icon.svg"
+        />
       </div>
       <p>Code</p>
     </div>
@@ -72,7 +96,13 @@
           'px-5 py-2 rounded-full gap-2',
         ]"
       >
-        <img class="w-[20px]" src="../assets/file-icon.svg" />
+        <img
+          :class="[
+            type == 'file' ? 'animate__animated animate__swing' : '',
+            'w-[20px] lg:group-hover:animate-bounce',
+          ]"
+          src="../assets/file-icon.svg"
+        />
       </div>
       <p>Files</p>
     </div>

@@ -3,7 +3,7 @@
     <div
       :class="[
         showUploadContainer ? 'bg-[#00000033]' : 'bg-none h-0 w-0',
-        'shade h-screen  lg:bg-none flex justify-center items-start lg:min-w-[300px] w-full z-30 fixed lg:relative lg:w-[35%] lg:p-0 p-5',
+        'shade h-screen  lg:bg-none flex justify-center items-start lg:min-w-[300px] w-full z-30 fixed lg:relative lg:w-[25%] lg:p-0 p-5',
       ]"
       @click.self="showUploadContainer = false"
     >
@@ -12,7 +12,9 @@
         v-on:toggleContainer="showUploadContainer = !showUploadContainer"
       />
     </div>
-    <div class="w-full h-full px-0 lg:px-10 flex flex-col items-center">
+    <div
+      class="lg:w-[75%] w-full h-full px-0 lg:px-10 flex flex-col items-center"
+    >
       <paste-type-switcher
         v-on:showPastesOfType="(type) => (activePasteType = type)"
       />
@@ -64,9 +66,6 @@ export default {
     },
   },
   methods: {
-    setActivePasteType(type) {
-      this.activePasteType = type;
-    },
     listenOnPastes() {
       supabase
         .from("pastes")
@@ -121,26 +120,29 @@ img {
   --btn-color: #eab4ce;
   --standout-bg: #f8ffab;
 }
-::-webkit-scrollbar {
-  width: 4px;
-  border-radius: 20px;
-}
+@media (min-width: 1024px) {
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 5px;
+    border-radius: 20px;
+  }
 
-/* Track */
-::-webkit-scrollbar-track {
-  background: var(--active-color);
-  border-radius: 20px;
-}
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: var(--base-color);
+    border-radius: 20px;
+  }
 
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: var(--base-color);
-  border-radius: 20px;
-}
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: var(--btn-color);
+    border-radius: 20px;
+  }
 
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
 }
 .skeleton-box {
   position: relative;
