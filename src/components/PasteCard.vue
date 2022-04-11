@@ -12,9 +12,13 @@
           : paste.text_content
       }}
     </p>
-    <pre v-if="paste.paste_type == 'code'" class="font-light">{{
-      paste.text_content
-    }}</pre>
+    <pre
+      v-highlightjs="sourcecode"
+      v-if="paste.paste_type == 'code'"
+      class="font-light w-full"
+    >
+      <code class="w-full">{{ paste.text_content }}</code>
+      </pre>
     <img
       v-if="paste.paste_type == 'image'"
       class="h-[200px] rounded-xl self-center"
