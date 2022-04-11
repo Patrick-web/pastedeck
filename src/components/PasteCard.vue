@@ -15,9 +15,8 @@
     <pre v-if="paste.paste_type == 'code'" class="font-light">{{
       paste.text_content
     }}</pre>
-
     <img
-      v-if="paste.paste_type == 'images'"
+      v-if="paste.paste_type == 'image'"
       class="h-[200px] rounded-xl self-center"
       :src="paste.file_url"
     />

@@ -1,9 +1,9 @@
 <template>
   <div
-    class="flex lg:gap-10 lg:min-h-[70px] lg:rounded-b-[30px] bg-base-color justify-evenly w-screen lg:w-auto overflow-hidden lg:relative fixed left-0 bottom-0 z-20"
+    class="flex lg:gap-10 lg:min-h-[70px] lg:rounded-b-[30px] lg:mb-2 bg-base-color justify-evenly w-screen lg:w-auto overflow-hidden lg:relative fixed left-0 bottom-0 z-20"
   >
     <div
-      @click="type = 'all'"
+      @click="showPastes('all')"
       class="group paste-type-switcher lg:hover:bg-active-color"
     >
       <div
@@ -18,12 +18,12 @@
     </div>
 
     <div
-      @click="type = 'images'"
+      @click="showPastes('image')"
       class="group paste-type-switcher lg:hover:bg-active-color"
     >
       <div
         :class="[
-          type == 'images' ? 'bg-active-color lg:group-hover:bg-white' : '',
+          type == 'image' ? 'bg-active-color lg:group-hover:bg-white' : '',
           'px-5 py-2 rounded-full gap-2',
         ]"
       >
@@ -33,7 +33,7 @@
     </div>
 
     <div
-      @click="type = 'text'"
+      @click="showPastes('text')"
       class="group paste-type-switcher lg:hover:bg-active-color"
     >
       <div
@@ -48,7 +48,7 @@
     </div>
 
     <div
-      @click="type = 'code'"
+      @click="showPastes('code')"
       class="group paste-type-switcher lg:hover:bg-active-color"
     >
       <div
@@ -63,12 +63,12 @@
     </div>
 
     <div
-      @click="type = 'files'"
+      @click="showPastes('file')"
       class="group paste-type-switcher lg:hover:bg-active-color"
     >
       <div
         :class="[
-          type == 'files' ? 'bg-active-color lg:group-hover:bg-white' : '',
+          type == 'file' ? 'bg-active-color lg:group-hover:bg-white' : '',
           'px-5 py-2 rounded-full gap-2',
         ]"
       >
@@ -86,6 +86,13 @@ export default {
       type: "all",
     };
   },
+  methods: {
+    showPastes(type) {
+      this.type = type;
+      this.$emit("showPastesOfType", type);
+    },
+  },
+  emits: ["showPastesOfType"],
 };
 </script>
 

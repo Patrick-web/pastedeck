@@ -13,15 +13,28 @@
       />
     </div>
     <div class="w-full h-full px-0 lg:px-10 flex flex-col items-center">
-      <paste-type-switcher />
+      <paste-type-switcher
+        v-on:showPastesOfType="(type) => (activePasteType = type)"
+      />
       <div
         ref="pastesWrapper"
         class="pastesWrapper w-full flex flex-col gap-4 grow pt-5 pb-40 px-5 overflow-y-auto"
       >
+        <div class="skeleton-loaders" v-if="fetchingPastes">
+          <div
+            v-for="i in 5"
+            :key="i"
+            class="skeleton-box w-full h-[100px] my-5 rounded-xl"
+          ></div>
+        </div>
         <transition-group
-          enter-active-class="animate__animated animate__lightSpeedInLeft"
+          enter-active-class="animate__animated animate__fadeInDown"
         >
-          <paste-card v-for="paste in pastes" :key="paste.id" :paste="paste" />
+          <paste-card
+            v-for="paste in filteredPastes"
+            :key="paste.id"
+            :paste="paste"
+          />
         </transition-group>
       </div>
     </div>
@@ -38,9 +51,22 @@ export default {
     return {
       showUploadContainer: false,
       pastes: [],
+      activePasteType: "all",
+      fetchingPastes: true,
     };
   },
+  computed: {
+    filteredPastes() {
+      if (this.activePasteType == "all") return this.pastes;
+      return this.pastes.filter(
+        (paste) => paste.paste_type == this.activePasteType
+      );
+    },
+  },
   methods: {
+    setActivePasteType(type) {
+      this.activePasteType = type;
+    },
     listenOnPastes() {
       supabase
         .from("pastes")
@@ -57,7 +83,6 @@ export default {
     PasteCard,
   },
   async mounted() {
-    console.log(this.$refs.pastesWrapper.scrollTop);
     try {
       const { error, pastes } = await getAllPastes();
       if (error) {
@@ -68,12 +93,13 @@ export default {
     } catch (error) {
       alert(error);
     }
+    this.fetchingPastes = false;
     this.listenOnPastes();
   },
 };
 </script>
 
-<style>
+<style lang="scss">
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap");
 @import url("https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css");
 * {
@@ -115,5 +141,32 @@ img {
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+.skeleton-box {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--base-color);
+
+  &::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    transform: translateX(-100%);
+    background-image: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0,
+      var(--active-color) 20%,
+      rgba(255, 255, 255, 0)
+    );
+    animation: shimmer 2s infinite;
+    content: "";
+  }
+}
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
 }
 </style>

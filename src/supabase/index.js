@@ -31,7 +31,7 @@ export async function uploadImagePaste(imageFile) {
   const imageUrl = `https://nulsuzurtwplzkhfzxce.supabase.co/storage/v1/object/public/${data.Key}`;
   const { data: newPaste, nerror } = await supabase.from("pastes").insert([
     {
-      paste_type: "images",
+      paste_type: "image",
       text_content: imageFile.name,
       file_name: imageFile.name,
       file_type: "image",
