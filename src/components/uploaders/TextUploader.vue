@@ -41,7 +41,7 @@ export default {
         }
       );
     },
-    async upoadText() {
+    async uploadText() {
       const paste = {
         type: "text",
         textContent: this.pasteText,

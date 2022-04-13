@@ -20,17 +20,7 @@
       />
       <div
         ref="pastesWrapper"
-        class="
-          pastesWrapper
-          w-full
-          flex flex-col
-          gap-4
-          grow
-          pt-5
-          pb-40
-          px-5
-          overflow-y-auto
-        "
+        class="pastesWrapper w-full flex flex-col gap-4 grow pt-5 pb-40 px-5 overflow-y-auto"
       >
         <div class="skeleton-loaders" v-if="fetchingPastes">
           <div
@@ -139,26 +129,24 @@ img {
   --btn-color: #eab4ce;
   --standout-bg: #f8ffab;
   --text-color: black;
-  --shadow-color:#00000029;
+  --shadow-color: #00000029;
+  .hljs {
+    background: var(--base-color);
+  }
 }
 .darkOn {
-  .icon{
+  .icon {
     filter: invert(1);
   }
-  .hljs{
-    filter: invert(1);
-  }
- --base-color: #000b23;
-    --app-bg: #000716;
-    --primary-color: #112858;
-    --primary-light: #213664;
-    --active-color: #3676ff;
-    --btn-color: #0f3da0;
-    --standout-bg: #abfffc;
-    --text-color: white;
-  --shadow-color:#11111129;
-
-
+  --base-color: #000b23;
+  --app-bg: #000716;
+  --primary-color: #112858;
+  --primary-light: #213664;
+  --active-color: #3676ff;
+  --btn-color: #0f3da0;
+  --standout-bg: #abfffc;
+  --text-color: white;
+  --shadow-color: #11111129;
 }
 @media (min-width: 1024px) {
   ::-webkit-scrollbar {

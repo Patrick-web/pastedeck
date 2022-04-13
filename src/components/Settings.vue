@@ -11,7 +11,7 @@
   <div
     v-if="showSettings"
     @click.self="$emit('closeSettings')"
-    class="fixed w-screen h-screen py-5 inset-0 z-40 flex justify-center items-center bg-[rgba(0,0,0,0.25)]"
+    class="fixed w-screen h-screen py-5 inset-0 z-40 backdrop-blur flex justify-center items-center bg-[rgba(0,0,0,0.25)]"
   >
     <div
       class="w-[80%] lg:w-[30%] max-h-[50%] p-5 bg-base-color rounded-[40px] animate__animated animate__fadeInUp animate__faster"

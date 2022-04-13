@@ -74,7 +74,11 @@
         'z-5 rounded-xl hover:rounded-[40px] absolute lg:top-2 lg:bottom-auto bottom-2 right-2 p-3',
       ]"
     >
-      <img class="w-[10px] icon" src="../assets/copy-icon.svg" alt="copy icon" />
+      <img
+        class="w-[10px] icon"
+        src="../assets/copy-icon.svg"
+        alt="copy icon"
+      />
     </button>
     <button
       @click="downloadFile"
@@ -114,12 +118,12 @@
     <div
       v-if="showFullPaste"
       @click.self="showFullPaste = null"
-      class="fixed w-screen h-screen py-5 inset-0 z-40 flex justify-center items-center bg-[rgba(0,0,0,0.25)]"
+      class="fixed w-screen h-screen backdrop-blur py-5 inset-0 z-40 flex justify-center items-center bg-[rgba(0,0,0,0.25)]"
     >
       <div
         :class="[
           paste.paste_type == 'image' ? '' : 'animate__fadeInDown',
-          'overflow-y-auto rounded-xl max-h-full w-[90%] px-5 bg-white animate__animated animate__faster',
+          'overflow-y-auto rounded-xl max-h-full w-[90%] px-5  animate__animated animate__faster',
         ]"
       >
         <p v-if="paste.paste_type == 'text'" class="font-light break-all">
@@ -130,7 +134,7 @@
           v-if="paste.paste_type == 'code'"
           class="font-light w-full"
         >
-      <code class="w-full" >{{ 
+      <code class="w-full rounded-xl" >{{ 
            paste.text_content }}</code>
       </pre>
       </div>
