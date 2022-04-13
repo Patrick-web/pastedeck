@@ -72,8 +72,12 @@ export default {
       if (this.darkOn) {
         localStorage.setItem("darkOn", true);
         document.querySelector(".app").classList.add("darkOn");
+        document.getElementsByTagName("meta")["theme-color"].content =
+          "#000716";
       } else {
         document.querySelector(".app").classList.remove("darkOn");
+        document.getElementsByTagName("meta")["theme-color"].content =
+          "#F2E1E1";
         localStorage.removeItem("darkOn");
       }
     },

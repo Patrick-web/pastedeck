@@ -139,6 +139,15 @@
   >
     <img class="w-[20px]" src="../assets/plus-icon.svg" alt="plus icon" />
   </button>
+  <button
+    @click="$emit('toggleContainer')"
+    :class="[
+      showContainer ? '' : 'hidden',
+      'lg:hidden w-[80px] h-[50px] bottom-0 -right-10 center-y-abs rounded-full p-3 fixed bg-red-500 z-20 drop-shadow-2xl animate__animated animate__fast animate__slideInRight',
+    ]"
+  >
+    <img class="w-[20px]" src="../assets/x-icon.svg" alt="close icon" />
+  </button>
 </template>
 
 <script>

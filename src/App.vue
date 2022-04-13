@@ -20,7 +20,7 @@
       />
       <div
         ref="pastesWrapper"
-        class="pastesWrapper w-full flex flex-col gap-4 grow pt-5 pb-40 px-5 overflow-y-auto"
+        class="pastesWrapper w-full flex flex-col gap-4 grow pt-5 pb-40 lg:pb-10 px-5 overflow-y-auto"
       >
         <div class="skeleton-loaders" v-if="fetchingPastes">
           <div

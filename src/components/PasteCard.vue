@@ -17,7 +17,7 @@
       v-if="paste.paste_type == 'code'"
       class="font-light w-full"
     >
-      <code class="w-full" @click="showFullPaste = true">{{ paste.text_content.length > 200
+      <code class="w-full text-sm -mb-10 -mt-5" @click="showFullPaste = true">{{ paste.text_content.length > 200
           ? paste.text_content.substring(0, 200) + "...."
           : paste.text_content }}</code>
       </pre>
@@ -47,7 +47,7 @@
         @click="showFullPaste = !showFullPaste"
         v-if="paste.paste_type == 'image'"
         :class="[
-          showFullPaste ? 'fixed z-40 center-abs w-[80%] h-auto' : '',
+          showFullPaste ? 'fixed z-50 center-abs w-[80%] h-auto' : '',
           ' rounded-xl self-start h-full',
         ]"
         :src="paste.file_url"
@@ -118,12 +118,12 @@
     <div
       v-if="showFullPaste"
       @click.self="showFullPaste = null"
-      class="fixed w-screen h-screen backdrop-blur py-5 inset-0 z-40 flex justify-center items-center bg-[rgba(0,0,0,0.25)]"
+      class="fixed w-screen h-screen backdrop-blur lg:py-5 inset-0 z-40 flex justify-center items-center bg-[rgba(0,0,0,0.25)]"
     >
       <div
         :class="[
           paste.paste_type == 'image' ? '' : 'animate__fadeInDown',
-          'overflow-y-auto rounded-xl max-h-full w-[90%] px-5  animate__animated animate__faster',
+          'overflow-y-auto rounded-xl max-h-full w-[90%] lg:px-5  animate__animated animate__faster',
         ]"
       >
         <p v-if="paste.paste_type == 'text'" class="font-light break-all">
@@ -134,7 +134,7 @@
           v-if="paste.paste_type == 'code'"
           class="font-light w-full"
         >
-      <code class="w-full rounded-xl" >{{ 
+      <code class="w-full rounded-xl text-sm" >{{ 
            paste.text_content }}</code>
       </pre>
       </div>
