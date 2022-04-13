@@ -1,5 +1,5 @@
 <template>
-  <div id="app" class="bg-app-bg w-screen h-screen flex">
+  <div class="app bg-app-bg w-screen h-screen flex">
     <div
       :class="[
         showUploadContainer ? 'bg-[#00000033]' : 'bg-none h-0 w-0',
@@ -20,7 +20,17 @@
       />
       <div
         ref="pastesWrapper"
-        class="pastesWrapper w-full flex flex-col gap-4 grow pt-5 pb-40 px-5 overflow-y-auto"
+        class="
+          pastesWrapper
+          w-full
+          flex flex-col
+          gap-4
+          grow
+          pt-5
+          pb-40
+          px-5
+          overflow-y-auto
+        "
       >
         <div class="skeleton-loaders" v-if="fetchingPastes">
           <div
@@ -40,6 +50,11 @@
         </transition-group>
       </div>
     </div>
+    <settings
+      :showSettings="showSettings"
+      v-on:closeSettings="showSettings = false"
+      v-on:openSettings="showSettings = true"
+    />
   </div>
 </template>
 
@@ -47,11 +62,13 @@
 import UploadContainer from "./components/UploadContainer.vue";
 import PasteTypeSwitcher from "./components/PasteTypeSwitcher.vue";
 import PasteCard from "./components/PasteCard.vue";
+import Settings from "./components/Settings.vue";
 import { supabase, getAllPastes } from "./supabase/index.js";
 export default {
   data() {
     return {
       showUploadContainer: false,
+      showSettings: false,
       pastes: [],
       activePasteType: "all",
       fetchingPastes: true,
@@ -80,6 +97,7 @@ export default {
     UploadContainer,
     PasteTypeSwitcher,
     PasteCard,
+    Settings,
   },
   async mounted() {
     try {
@@ -103,6 +121,7 @@ export default {
 @import url("https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css");
 * {
   transition: 0.3s ease-in-out;
+  color: var(--text-color);
 }
 img {
   max-width: initial !important;
@@ -110,7 +129,7 @@ img {
 .shade {
   transition: none;
 }
-#app {
+.app {
   font-family: "Roboto", sans-serif;
   --base-color: #fffafa;
   --app-bg: #f2e1e1;
@@ -119,6 +138,27 @@ img {
   --active-color: #ffdada;
   --btn-color: #eab4ce;
   --standout-bg: #f8ffab;
+  --text-color: black;
+  --shadow-color:#00000029;
+}
+.darkOn {
+  .icon{
+    filter: invert(1);
+  }
+  .hljs{
+    filter: invert(1);
+  }
+ --base-color: #000b23;
+    --app-bg: #000716;
+    --primary-color: #112858;
+    --primary-light: #213664;
+    --active-color: #3676ff;
+    --btn-color: #0f3da0;
+    --standout-bg: #abfffc;
+    --text-color: white;
+  --shadow-color:#11111129;
+
+
 }
 @media (min-width: 1024px) {
   ::-webkit-scrollbar {

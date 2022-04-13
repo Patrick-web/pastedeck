@@ -15,7 +15,7 @@
         <img
           :class="[
             type == 'all' ? 'animate__animated animate__swing' : '',
-            'w-[20px] lg:group-hover:animate-bounce',
+            'w-[20px] lg:group-hover:animate-bounce icon',
           ]"
           src="../assets/timeline-icon.svg"
         />
@@ -36,7 +36,7 @@
         <img
           :class="[
             type == 'image' ? 'animate__animated animate__swing' : '',
-            'w-[20px] lg:group-hover:animate-bounce',
+            'w-[20px] lg:group-hover:animate-bounce icon',
           ]"
           src="../assets/image-icon.svg"
         />
@@ -57,7 +57,7 @@
         <img
           :class="[
             type == 'text' ? 'animate__animated animate__swing' : '',
-            'w-[20px] lg:group-hover:animate-bounce',
+            'w-[20px] lg:group-hover:animate-bounce icon',
           ]"
           src="../assets/text-icon.svg"
         />
@@ -78,7 +78,7 @@
         <img
           :class="[
             type == 'code' ? 'animate__animated animate__swing' : '',
-            'w-[20px] lg:group-hover:animate-bounce',
+            'w-[20px] lg:group-hover:animate-bounce icon',
           ]"
           src="../assets/code-icon.svg"
         />
@@ -99,7 +99,7 @@
         <img
           :class="[
             type == 'file' ? 'animate__animated animate__swing' : '',
-            'w-[20px] lg:group-hover:animate-bounce',
+            'w-[20px] lg:group-hover:animate-bounce icon',
           ]"
           src="../assets/file-icon.svg"
         />

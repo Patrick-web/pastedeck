@@ -36,7 +36,7 @@
           src="../assets/expand-icon.svg"
           alt="expand icon"
           title="Show full paste"
-          class="w-[15px]"
+          class="w-[15px] icon"
         />
       </button>
     </div>
@@ -74,7 +74,7 @@
         'z-5 rounded-xl hover:rounded-[40px] absolute lg:top-2 lg:bottom-auto bottom-2 right-2 p-3',
       ]"
     >
-      <img class="w-[10px]" src="../assets/copy-icon.svg" alt="copy icon" />
+      <img class="w-[10px] icon" src="../assets/copy-icon.svg" alt="copy icon" />
     </button>
     <button
       @click="downloadFile"
@@ -82,7 +82,7 @@
       class="z-5 rounded-xl hover:rounded-full bg-app-bg absolute top-2 right-2 p-3"
     >
       <img
-        class="w-[10px]"
+        class="w-[10px] icon"
         src="../assets/dowload-icon.svg"
         alt="download icon"
         v-if="!fetchingDowload"

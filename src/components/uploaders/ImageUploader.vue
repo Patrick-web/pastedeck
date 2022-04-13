@@ -17,7 +17,7 @@
         @change="showImagePreviews"
       />
       <img
-        class="w-[20px] group-hover:rotate-180"
+        class="w-[20px] group-hover:rotate-180 icon"
         src="../../assets/plus-icon.svg"
       />
     </button>
