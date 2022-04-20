@@ -4,11 +4,32 @@ const supabaseUrl = "https://nulsuzurtwplzkhfzxce.supabase.co";
 const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
+export async function getPasswordInfo(password) {
+  let { data, error } = await supabase
+    .from("share-passwords")
+    .select("*")
+    .eq("share_password", password)
+    .single();
+
+  return { data, error };
+}
+
+export async function getPastesByPassword(password) {
+  let { data: pastes, error } = await supabase
+    .from("pastes")
+    .select("*")
+    .eq("share_password", password)
+    .order("created_at", { ascending: false })
+    .limit(10);
+  return { pastes, error };
+}
+
 export async function getAllPastes() {
   let { data: pastes, error } = await supabase
     .from("pastes")
     .select("*")
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .limit(10);
   return { pastes, error };
 }
 

@@ -4,6 +4,8 @@ import "./index.css";
 import VueHighlightJS from "vue3-highlightjs";
 import "highlight.js/styles/solarized-light.css";
 
+import BaseInput from "@/components/reusables/BaseInput.vue";
+import BaseButton from "@/components/reusables/BaseButton.vue";
 // import { registerSW } from "virtual:pwa-register";
 
 // const updateSW = registerSW({
@@ -16,4 +18,8 @@ import "highlight.js/styles/solarized-light.css";
 //   strategies: "injectManifest",
 // });
 
-createApp(App).use(VueHighlightJS).mount("#app");
+const app = createApp(App);
+app.component("BaseInput", BaseInput);
+app.component("BaseButton", BaseButton);
+app.use(VueHighlightJS);
+app.mount("#app");

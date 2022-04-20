@@ -1,11 +1,13 @@
 <template>
-  <div class="app bg-app-bg w-screen h-screen flex">
+  <div class="app bg-app-bg w-screen h-screen flex items-start justify-center">
+    <auth-manager v-if="showAuthContainer" @getPastes="getPastes" />
     <div
       :class="[
         showUploadContainer ? 'bg-[#00000033]' : 'bg-none h-0 w-0',
         'shade h-screen  lg:bg-none flex justify-center items-start lg:min-w-[300px] w-full z-30 fixed lg:relative lg:w-[25%] lg:p-0 p-5',
       ]"
       @click.self="showUploadContainer = false"
+      v-if="accessLevel == 'ADMIN'"
     >
       <UploadContainer
         :showContainer="showUploadContainer"
@@ -44,6 +46,10 @@
       :showSettings="showSettings"
       v-on:closeSettings="showSettings = false"
       v-on:openSettings="showSettings = true"
+      v-on:showAuthContainer="
+        showAuthContainer = true;
+        showSettings = false;
+      "
     />
   </div>
 </template>
@@ -53,7 +59,8 @@ import UploadContainer from "./components/UploadContainer.vue";
 import PasteTypeSwitcher from "./components/PasteTypeSwitcher.vue";
 import PasteCard from "./components/PasteCard.vue";
 import Settings from "./components/Settings.vue";
-import { supabase, getAllPastes } from "./supabase/index.js";
+import AuthManager from "./components/AuthManager.vue";
+import { supabase, getPastesByPassword } from "./supabase/index.js";
 export default {
   data() {
     return {
@@ -61,7 +68,9 @@ export default {
       showSettings: false,
       pastes: [],
       activePasteType: "all",
-      fetchingPastes: true,
+      fetchingPastes: false,
+      showAuthContainer: true,
+      accessLevel: "USER",
     };
   },
   computed: {
@@ -77,10 +86,29 @@ export default {
       supabase
         .from("pastes")
         .on("INSERT", async (payload) => {
-          this.pastes.unshift(payload.new);
-          this.$refs.pastesWrapper.scrollTo(0, 0);
+          //  this.pastes.unshift(payload.new);
+          //  this.$refs.pastesWrapper.scrollTo(0, 0);
         })
         .subscribe();
+    },
+    async getPastes(passwordObj) {
+      this.accessLevel = passwordObj.access_level;
+      this.showAuthContainer = false;
+      try {
+        this.fetchingPastes = true;
+        const { error, pastes } = await getPastesByPassword(
+          passwordObj.share_password
+        );
+        if (error) {
+          alert(error.message);
+        } else {
+          this.pastes = pastes;
+          console.log(pastes);
+        }
+      } catch (error) {
+        alert(error);
+      }
+      this.fetchingPastes = false;
     },
   },
   components: {
@@ -88,20 +116,10 @@ export default {
     PasteTypeSwitcher,
     PasteCard,
     Settings,
+    AuthManager,
   },
   async mounted() {
-    try {
-      const { error, pastes } = await getAllPastes();
-      if (error) {
-        alert(error.message);
-      } else {
-        this.pastes = pastes;
-      }
-    } catch (error) {
-      alert(error);
-    }
-    this.fetchingPastes = false;
-    this.listenOnPastes();
+    //this.listenOnPastes();
   },
 };
 </script>

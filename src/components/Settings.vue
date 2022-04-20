@@ -55,6 +55,13 @@
           </p>
         </div>
       </button>
+      <div class="w-full grid place-items-center mt-5">
+        <base-button
+          buttonLabel="Logout"
+          @click="$emit('showAuthContainer')"
+          class="bg-red-300"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -93,6 +100,7 @@ export default {
   props: {
     showSettings: Boolean,
   },
+  emits: ["openSettings", "closeSettings", "showAuthContainer"],
 };
 </script>
 <style lang="scss">
