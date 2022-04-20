@@ -101,6 +101,7 @@ export default {
       try {
         this.fetchingPastes = true;
         if (this.accessLevel == "ADMIN") {
+          localStorage.setItem("AdminKey", passwordObj.share_password);
           const { error, pastes } = await getAllPastes();
           if (error) {
             alert(error.message);

@@ -58,9 +58,12 @@ export default {
       type: String,
     },
   },
-  created() {
+  mounted() {
     this.inputValue = this.defaultValue;
     this.$emit("entry", this.inputValue);
+    setTimeout(() => {
+      this.inputValue = this.defaultValue;
+    }, 0);
   },
   emits: ["entry", "enterPressed"],
   inheritAttrs: false,

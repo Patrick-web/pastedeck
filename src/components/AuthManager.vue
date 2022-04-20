@@ -7,7 +7,7 @@
     >
       <base-input
         inputLabel="Enter password"
-        defaultValue=""
+        :defaultValue="adminKey"
         :error="passwordError"
         @entry="(value) => (password = value)"
         @enterPressed="validate"
@@ -34,6 +34,7 @@ export default {
       password: "",
       passwordError: "",
       loading: false,
+      adminKey: "",
     };
   },
   methods: {
@@ -49,6 +50,9 @@ export default {
       this.$emit("getPastes", data);
       this.$refs.passwordInput.clearInput();
     },
+  },
+  mounted() {
+    this.adminKey = localStorage.getItem("AdminKey") || "";
   },
   emits: ["getPastes"],
 };
