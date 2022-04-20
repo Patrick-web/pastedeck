@@ -60,7 +60,11 @@ import PasteTypeSwitcher from "./components/PasteTypeSwitcher.vue";
 import PasteCard from "./components/PasteCard.vue";
 import Settings from "./components/Settings.vue";
 import AuthManager from "./components/AuthManager.vue";
-import { supabase, getPastesByPassword } from "./supabase/index.js";
+import {
+  supabase,
+  getPastesByPassword,
+  getAllPastes,
+} from "./supabase/index.js";
 export default {
   data() {
     return {
@@ -96,17 +100,27 @@ export default {
       this.showAuthContainer = false;
       try {
         this.fetchingPastes = true;
-        const { error, pastes } = await getPastesByPassword(
-          passwordObj.share_password
-        );
-        if (error) {
-          alert(error.message);
+        if (this.accessLevel == "ADMIN") {
+          const { error, pastes } = await getAllPastes();
+          if (error) {
+            alert(error.message);
+          } else {
+            this.pastes = pastes;
+            console.log(pastes);
+          }
         } else {
-          this.pastes = pastes;
-          console.log(pastes);
+          const { error, pastes } = await getPastesByPassword(
+            passwordObj.share_password
+          );
+          if (error) {
+            alert(error.message);
+          } else {
+            this.pastes = pastes;
+            console.log(pastes);
+          }
         }
-      } catch (error) {
-        alert(error);
+      } catch (e) {
+        alert(e);
       }
       this.fetchingPastes = false;
     },

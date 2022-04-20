@@ -20,7 +20,7 @@ export async function getPastesByPassword(password) {
     .select("*")
     .eq("share_password", password)
     .order("created_at", { ascending: false })
-    .limit(10);
+    .limit(20);
   return { pastes, error };
 }
 
