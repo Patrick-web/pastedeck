@@ -59,10 +59,9 @@ export default {
     },
   },
   mounted() {
-    this.inputValue = this.defaultValue;
-    this.$emit("entry", this.inputValue);
     setTimeout(() => {
       this.inputValue = this.defaultValue;
+      this.$emit("entry", this.inputValue);
     }, 0);
   },
   emits: ["entry", "enterPressed"],
