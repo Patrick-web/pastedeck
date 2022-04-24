@@ -5,6 +5,12 @@
 @layer base {
 }
 
+@layer utilities {
+  .triangle-clip {
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  }
+}
+
 @layer components {
   .center-abs {
     @apply absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2;

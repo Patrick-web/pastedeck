@@ -23,8 +23,9 @@
       </pre>
     <div
       v-if="
-        (paste.paste_type == 'text' || paste.paste_type == 'code') &&
-        paste.text_content.length > 200
+        ((paste.paste_type == 'text' || paste.paste_type == 'code') &&
+          paste.text_content.length > 200) ||
+        urlPrviewer.type
       "
       class="flex items-center justify-center"
     >
@@ -40,7 +41,7 @@
         />
       </button>
     </div>
-    <div
+    <button
       class="w-full flex justify-start items-center max-h-[200px] overflow-hidden"
     >
       <img
@@ -52,7 +53,7 @@
         ]"
         :src="paste.file_url"
       />
-    </div>
+    </button>
     <div v-if="paste.paste_type == 'file'">
       <div class="flex items-center gap-2">
         <img
@@ -123,10 +124,17 @@
       <div
         :class="[
           paste.paste_type == 'image' ? '' : 'animate__fadeInDown',
-          'overflow-y-auto rounded-xl max-h-full w-[90%] lg:px-5  animate__animated animate__faster',
+          'overflow-y-auto rounded-xl max-h-full w-[100%] lg:px-5  animate__animated animate__faster',
         ]"
       >
-        <p v-if="paste.paste_type == 'text'" class="font-light break-all">
+        <div v-if="urlPrviewer.type" class="h-[100vh] w-full bg-app-bg">
+          <div v-html="urlPrviewer.html" class="w-[100%]"></div>
+        </div>
+
+        <p
+          v-if="paste.paste_type == 'text && paste.text_content.length > 200'"
+          class="font-light bg-app-bg p-5 rounded-xl"
+        >
           {{ paste.text_content }}
         </p>
         <pre
@@ -138,6 +146,15 @@
            paste.text_content }}</code>
       </pre>
       </div>
+      <button
+        @click="showFullPaste = null"
+        :class="[
+          showFullPaste ? '' : 'hidden',
+          'w-[50px] h-[80px] -bottom-10 left-[45%] rounded-full flex justify-center pt-3 fixed bg-red-500 z-[60] drop-shadow-2xl animate__animated animate__fast animate__slideInUp',
+        ]"
+      >
+        <img class="w-[20px] icon" src="../assets/x-icon.svg" />
+      </button>
     </div>
   </div>
 </template>
@@ -162,6 +179,10 @@ export default {
       downloaded: false,
       showFullPaste: false,
       fetchingDowload: false,
+      urlPrviewer: {
+        type: null,
+        html: null,
+      },
     };
   },
   props: {
@@ -244,6 +265,24 @@ export default {
         this.fetchingDowload = false;
       }
     },
+    parseText(text) {
+      const urlRegex = /(https?:\/\/[^\s]+)/;
+      if (text.startsWith("http") && urlRegex.test(text)) {
+        if (text.includes("https://twitter.com")) {
+          this.urlPrviewer.type = "Twitter";
+          this.urlPrviewer.html = `<iframe border=0 frameborder=0 height=25 class="w-[100%] lg:w-[500px] h-[800px]" src="https://twitframe.com/show?url=${text}"></iframe>`;
+        }
+        if (text.includes("youtu")) {
+          let video_id = text.split("=")[1] || text.split("be/")[1];
+          this.urlPrviewer.type = "YouTube";
+          this.urlPrviewer.html = `<iframe id="player" type="text/html" class="w-[100%] h-[200px] lg:h-[600px] " src="http://www.youtube.com/embed/${video_id}?enablejsapi=1" frameborder="0"></iframe>`;
+        }
+      }
+      console.log(this.urlPrviewer);
+    },
+  },
+  mounted() {
+    this.parseText(this.paste.text_content);
   },
 };
 </script>

@@ -2,7 +2,7 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import "./index.css";
 import VueHighlightJS from "vue3-highlightjs";
-import "highlight.js/styles/solarized-light.css";
+import "vue3-highlightjs/styles/solarized-light.css";
 
 import BaseInput from "@/components/reusables/BaseInput.vue";
 import BaseButton from "@/components/reusables/BaseButton.vue";

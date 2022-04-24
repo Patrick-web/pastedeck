@@ -7,7 +7,7 @@
         'shade h-screen  lg:bg-none flex justify-center items-start lg:min-w-[300px] w-full z-30 fixed lg:relative lg:w-[25%] lg:p-0 p-5',
       ]"
       @click.self="showUploadContainer = false"
-      v-if="accessLevel == 'ADMIN'"
+      v-if="passwordObj && passwordObj.access_level == 'ADMIN'"
     >
       <UploadContainer
         :showContainer="showUploadContainer"
@@ -74,7 +74,7 @@ export default {
       activePasteType: "all",
       fetchingPastes: false,
       showAuthContainer: true,
-      accessLevel: "USER",
+      passwordObj: null,
     };
   },
   computed: {
@@ -89,19 +89,21 @@ export default {
     listenOnPastes() {
       supabase
         .from("pastes")
-        .on("INSERT", async (payload) => {
+        .on("INSERT", async () => {
           //  this.pastes.unshift(payload.new);
           //  this.$refs.pastesWrapper.scrollTo(0, 0);
+          this.getPastes();
         })
         .subscribe();
     },
-    async getPastes(passwordObj) {
-      this.accessLevel = passwordObj.access_level;
+    async getPastes(payload = this.passwordObj) {
+      this.passwordObj = payload || this.passwordObj;
+      console.log(this.passwordObj);
       this.showAuthContainer = false;
       try {
         this.fetchingPastes = true;
-        if (this.accessLevel == "ADMIN") {
-          localStorage.setItem("AdminKey", passwordObj.share_password);
+        if (this.passwordObj.access_level == "ADMIN") {
+          localStorage.setItem("AdminKey", this.passwordObj.share_password);
           const { error, pastes } = await getAllPastes();
           if (error) {
             alert(error.message);
@@ -111,7 +113,7 @@ export default {
           }
         } else {
           const { error, pastes } = await getPastesByPassword(
-            passwordObj.share_password
+            this.passwordObj.share_password
           );
           if (error) {
             alert(error.message);
@@ -134,7 +136,7 @@ export default {
     AuthManager,
   },
   async mounted() {
-    //this.listenOnPastes();
+    this.listenOnPastes();
   },
 };
 </script>
@@ -152,17 +154,21 @@ img {
 .shade {
   transition: none;
 }
-.app {
+:root {
   font-family: "Roboto", sans-serif;
-  --base-color: #fffafa;
-  --app-bg: #f2e1e1;
-  --primary-color: #f2e1e1;
-  --primary-light: #f3cfcf;
-  --active-color: #ffdada;
-  --btn-color: #eab4ce;
-  --standout-bg: #f8ffab;
-  --text-color: black;
-  --shadow-color: #00000029;
+  --base-hue: 0;
+  --standout-hue: calc(var(--base-hue) + 65);
+  --base-color: hsl(var(--base-hue) 100% 99%);
+  --app-bg: hsl(var(--base-hue) 40% 92%);
+  --primary-color: hsl(var(--base-hue) 40% 92%);
+  --primary-light: hsl(var(--base-hue) 60% 88%);
+  --active-color: hsl(var(--base-hue) 100% 93%);
+  --btn-color: hsl(var(--base-hue) 56% 81%);
+  --standout-bg: hsl(var(--standout-hue, 65) 100% 84%);
+  --text-color: hsl(0deg 0% 0%);
+  --shadow-color: hsl(0deg 0% 0% / 16%);
+}
+.app {
   .hljs {
     background: var(--base-color);
   }
@@ -171,15 +177,22 @@ img {
   .icon {
     filter: invert(1);
   }
-  --base-color: #000b23;
-  --app-bg: #000716;
-  --primary-color: #112858;
-  --primary-light: #213664;
-  --active-color: #3676ff;
-  --btn-color: #0f3da0;
-  --standout-bg: #abfffc;
-  --text-color: white;
-  --shadow-color: #11111129;
+  input {
+    color: var(--text-color) !important;
+    border-color: var(--text-color) !important;
+  }
+  label {
+    color: var(--text-color) !important;
+  }
+  --standout-hue: calc(var(--base-hue) + 65);
+  --base-color: hsl(var(--base-hue) 100% 3%);
+  --app-bg: hsl(var(--base-hue) 40% 5%);
+  --primary-color: hsl(var(--base-hue) 40% 10%);
+  --primary-light: hsl(var(--base-hue) 60% 10%);
+  --active-color: hsl(var(--base-hue) 100% 20%);
+  --btn-color: hsl(var(--base-hue) 56% 30%);
+  --standout-bg: hsl(var(--standout-hue, 65) 100% 40%);
+  --text-color: hsl(0deg 0% 100%);
 }
 @media (min-width: 1024px) {
   ::-webkit-scrollbar {

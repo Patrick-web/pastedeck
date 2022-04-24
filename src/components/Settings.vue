@@ -14,7 +14,7 @@
     class="fixed w-screen h-screen py-5 inset-0 z-40 backdrop-blur flex justify-center items-center bg-[rgba(0,0,0,0.25)]"
   >
     <div
-      class="w-[80%] lg:w-[30%] max-h-[50%] p-5 bg-base-color rounded-[40px] animate__animated animate__fadeInUp animate__faster"
+      class="w-[80%] lg:w-[30%] p-5 bg-base-color rounded-[40px] animate__animated animate__fadeInUp animate__faster"
     >
       <p class="text-center lg:text-3xl text-2xl font-bold mb-5">Settings</p>
       <button
@@ -55,11 +55,31 @@
           </p>
         </div>
       </button>
+      <div
+        style="
+background: linear-gradient(to right, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%
+        "
+        class="relative w-full h-[80px] rounded-2xl mt-5 flex items-center cursor-pointer"
+      >
+        <div
+          :style="{ left: hueLeft }"
+          class="absolute transition-none h-[80%] w-[10px] -translate-x-[100%] bg-white rounded-full"
+        ></div>
+        <input
+          type="range"
+          class="absolute inset-0 opacity-0"
+          min="0"
+          max="360"
+          @input="changeHue"
+          v-model="hueValue"
+        />
+      </div>
+
       <div class="w-full grid place-items-center mt-5">
         <base-button
           buttonLabel="Logout"
           @click="$emit('showAuthContainer')"
-          class="bg-red-300"
+          class="bg-btn-color"
         />
       </div>
     </div>
@@ -71,6 +91,8 @@ export default {
   data() {
     return {
       darkOn: false,
+      hueLeft: "0%",
+      hueValue: 0,
     };
   },
   methods: {
@@ -88,8 +110,16 @@ export default {
         localStorage.removeItem("darkOn");
       }
     },
+    changeHue() {
+      const root = document.documentElement;
+      root.style.setProperty("--base-hue", this.hueValue);
+      this.hueLeft = `${Math.round((this.hueValue / 360) * 100)}%`;
+      localStorage.setItem("hue", this.hueValue);
+    },
   },
   mounted() {
+    this.hueValue = localStorage.getItem("hue") || 0;
+    this.changeHue();
     const darkOn = localStorage.getItem("darkOn");
     if (darkOn) {
       this.toggleDarkMode(true);

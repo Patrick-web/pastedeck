@@ -2,7 +2,7 @@
   <button
     v-bind="$attrs"
     :type="buttonType"
-    class="active:rounded-2xl active:brightness-75 focus:outline-none focus:ring-4 focus:ring-pink-100 hover:brightness-[90%] px-5 py-3 shadow rounded-3xl font-bold"
+    class="active:rounded-2xl active:brightness-75 hover:brightness-[90%] px-5 py-3 shadow rounded-3xl font-bold"
   >
     <slot></slot>
     <p>

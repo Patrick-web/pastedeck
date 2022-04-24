@@ -10,6 +10,7 @@
   "dependencies": {
     "@supabase/supabase-js": "^1.33.3",
     "bottom-sheet-vue3": "^1.0.2",
+    "link-preview-js": "^2.1.13",
     "vue": "^3.2.25",
     "vue3-highlightjs": "^1.0.5"
   },

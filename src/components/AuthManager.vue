@@ -9,7 +9,7 @@
         inputLabel="Enter password"
         :defaultValue="adminKey"
         :error="passwordError"
-        @entry="(value) => (password = value)"
+        @entry="(value) => (password = value.toLowerCase())"
         @enterPressed="validate"
         ref="passwordInput"
         autofocus
