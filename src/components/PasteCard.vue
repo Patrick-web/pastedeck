@@ -132,7 +132,7 @@
         </div>
 
         <p
-          v-if="paste.paste_type == 'text && paste.text_content.length > 200'"
+          v-if="paste.paste_type == 'text' && paste.text_content.length > 200"
           class="font-light bg-app-bg p-5 rounded-xl"
         >
           {{ paste.text_content }}
