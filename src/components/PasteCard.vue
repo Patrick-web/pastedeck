@@ -275,7 +275,7 @@ export default {
         if (text.includes("youtu")) {
           let video_id = text.split("=")[1] || text.split("be/")[1];
           this.urlPrviewer.type = "YouTube";
-          this.urlPrviewer.html = `<iframe id="player" type="text/html" class="w-[100%] h-[200px] lg:h-[600px] " src="http://www.youtube.com/embed/${video_id}?enablejsapi=1" frameborder="0"></iframe>`;
+          this.urlPrviewer.html = `<iframe id="player" type="text/html" class="w-[100%] h-[200px] lg:h-[600px] " src="https://www.youtube.com/embed/${video_id}?enablejsapi=1" frameborder="0"></iframe>`;
         }
       }
       console.log(this.urlPrviewer);
