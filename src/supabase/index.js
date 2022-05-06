@@ -28,8 +28,7 @@ export async function getAllPastes() {
   let { data: pastes, error } = await supabase
     .from("pastes")
     .select("*")
-    .order("created_at", { ascending: false })
-    .limit(10);
+    .order("created_at", { ascending: false });
   return { pastes, error };
 }
 
