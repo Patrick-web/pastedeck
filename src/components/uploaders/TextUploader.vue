@@ -20,7 +20,6 @@
 </template>
 
 <script>
-import Loader from "../reusables/Loader.vue";
 import { uploadTextBasedPaste } from "../../supabase/index.js";
 
 export default {
@@ -55,9 +54,6 @@ export default {
         return;
       }
     },
-  },
-  components: {
-    Loader,
   },
   watch: {
     beginTextUpload() {

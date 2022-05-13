@@ -45,7 +45,7 @@ export default {
   background: linear-gradient(
     271deg,
     var(--standout-bg),
-    #ffc2da,
+    var(--primary-color),
     var(--standout-bg)
   );
   border: none;

@@ -5,21 +5,71 @@
   <div
     class="paste-box image-paste pr-5 gap-3 flex flex-col max-h-full overflow-y-auto overflow-x-hidden"
   >
-    <button
-      class="relative rounded-3xl bg-btn-color flex justify-center items-center w-full py-5 group lg:hover:saturate-150 lg:hover:rounded-xl"
+    <div class="sticky top-0 z-10 bg-primary-color rounded-full">
+      <button
+        class="relative rounded-3xl bg-btn-color flex justify-center items-center w-full py-5 mb-5 group lg:hover:saturate-150 lg:hover:rounded-xl"
+      >
+        <input
+          ref="fileInput"
+          type="file"
+          multiple
+          class="absolute inset-0 opacity-0 z-5 cursor-pointer"
+          @change="addFiles"
+        />
+        <img
+          class="w-[20px] group-hover:rotate-180"
+          src="../../assets/plus-icon.svg"
+        />
+        <p
+          class="absolute left-[50%] -translate-x-[50%] w-[85%] pointer-events-none text-sm font-light px-4 py-2 rounded-full bg-primary-light -bottom-[30%]"
+        >
+          Max 5mb | For 24hrs
+        </p>
+      </button>
+    </div>
+    <div
+      v-if="selectedFiles.length !== 0"
+      class="bg-red-200 p-2 rounded-xl w-full flex"
     >
-      <input
-        ref="fileInput"
-        type="file"
-        multiple
-        class="absolute inset-0 opacity-0 z-5 cursor-pointer"
-        @change="addFiles"
-      />
-      <img
-        class="w-[20px] group-hover:rotate-180"
-        src="../../assets/plus-icon.svg"
-      />
-    </button>
+      <div
+        v-if="exceededMaxUpload"
+        class="h-full flex flex-col p-2 items-center justify-items-center"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6 m-auto"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+      </div>
+      <div>
+        <p v-if="exceededMaxUpload" class="text-sm">
+          You have exceeded the upload limit. Some file(s) will been
+          <span
+            class="text-sm w-[70px] font-bold text-red-900 bg-red-300 px-2 py-1 rounded-full"
+          >
+            skipped
+          </span>
+        </p>
+        <p class="text-sm font-light">
+          <span class="font-bold">
+            {{ selectedFiles.length }}
+          </span>
+          files totaling to
+          <span class="font-bold">
+            {{ formatBytes(totalFileSize) }}
+          </span>
+        </p>
+      </div>
+    </div>
     <transition-group
       leave-active-class="animate__animated animate__lightSpeedOutRight"
     >
@@ -27,16 +77,26 @@
         v-for="(file, index) in selectedFiles"
         :key="index"
         @click="expandedImage = preview"
-        class="group hover:bg-btn-color cursor-pointer relative py-2 w-full bg-primary-light rounded-2xl pl-1 pr-4 flex items-center gap-1"
+        class="group relative py-2 w-full bg-primary-light rounded-2xl pl-1 pr-4 flex items-center gap-1"
       >
-        <img
-          :src="fileicon(file)"
-          class="h-[50px] rounded-xl cursor-pointer group-hover:scale-105"
-        />
-        <p class="text-sm break-all">{{ file.name }}</p>
+        <img :src="fileicon(file)" class="h-[40px]" />
+        <div>
+          <p class="text-sm break-all">{{ file.name }}</p>
+          <p class="text-sm font-light break-all">
+            {{ formatBytes(file.size) }}
+          </p>
+          <p
+            v-if="file.skipped"
+            class="text-sm w-[70px] font-bold text-red-900 bg-red-300 px-2 py-1 rounded-full"
+          >
+            Skipped
+          </p>
+        </div>
         <button
-          class="z-5 rounded-xl hover:rounded-full bg-red-300 absolute center-y-abs -right-4 p-2 drop-shadow"
+          class="z-5 rounded-xl hover:rounded-3xl bg-red-300 absolute center-y-abs -right-4 p-2 drop-shadow"
           @click.stop="removeFile(index)"
+          title="Remove file"
+          aria-label="remove file"
         >
           <img
             class="w-[15px]"
@@ -80,9 +140,18 @@ export default {
       expandedImage: null,
       uploadedCount: 0,
       uploading: false,
+      MAXUPLOADSIZE: 5e6,
+      exceededMaxUpload: false,
     };
   },
-  computed: {},
+  computed: {
+    totalFileSize() {
+      return this.selectedFiles.reduce(
+        (previous, file) => previous + file.size,
+        0
+      );
+    },
+  },
   methods: {
     fileicon(file) {
       if (file.name.includes("xls") || file.name.includes("xlsx")) {
@@ -117,10 +186,24 @@ export default {
     },
     addFiles() {
       const files = this.$refs.fileInput.files;
-      console.log(files);
       if (!files[0]) return;
       this.selectedFiles = [...Array.from(files), ...this.selectedFiles];
-      this.selectedFilesCopy = [...this.selectedFiles];
+      console.log(this.selectedFiles[0]);
+      let index = this.selectedFiles.length - 1;
+      let size = 0;
+      while (index >= 0) {
+        size += this.selectedFiles[index].size;
+        console.log("Looping " + index);
+        if (size > this.MAXUPLOADSIZE) {
+          console.log("Exceeded");
+          this.selectedFiles[index]["skipped"] = true;
+          this.exceededMaxUpload = true;
+        }
+        index--;
+      }
+      this.selectedFilesCopy = [
+        ...this.selectedFiles.filter((file) => !file.skipped),
+      ];
     },
     showFilePreview() {
       console.log("previewing");
@@ -134,7 +217,11 @@ export default {
       for (const file of this.selectedFilesCopy) {
         console.log("called");
         await uploadFilePaste(file);
-        this.selectedFiles.shift();
+        this.selectedFiles.forEach((file, index) => {
+          if (!file.skipped) {
+            this.selectedFiles.splice(index, 1);
+          }
+        });
         console.log("uploaded " + file.name);
         this.uploadedCount += 1;
       }
@@ -144,6 +231,17 @@ export default {
         this.selectedFilesCopy = [];
         this.uploadedCount = 0;
       }, 2000);
+    },
+    formatBytes(bytes, decimals = 2) {
+      if (bytes === 0) return "0 Bytes";
+
+      const k = 1024;
+      const dm = decimals < 0 ? 0 : decimals;
+      const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
     },
   },
   watch: {

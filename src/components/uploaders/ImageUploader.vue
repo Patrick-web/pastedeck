@@ -20,6 +20,11 @@
         class="w-[20px] group-hover:rotate-180 icon"
         src="../../assets/plus-icon.svg"
       />
+      <p
+        class="absolute left-[50%] -translate-x-[50%] w-[80%] text-sm font-light px-4 py-2 rounded-full bg-primary-light -bottom-[20%]"
+      >
+        Max 5mb For 24hrs
+      </p>
     </button>
     <transition-group leave-active-class="animate__animated animate__zoomOut">
       <div

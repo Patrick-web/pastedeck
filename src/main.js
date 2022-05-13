@@ -6,6 +6,7 @@ import "vue3-highlightjs/styles/solarized-light.css";
 
 import BaseInput from "@/components/reusables/BaseInput.vue";
 import BaseButton from "@/components/reusables/BaseButton.vue";
+import Loader from "@/components/reusables/Loader.vue";
 // import { registerSW } from "virtual:pwa-register";
 
 // const updateSW = registerSW({
@@ -21,5 +22,6 @@ import BaseButton from "@/components/reusables/BaseButton.vue";
 const app = createApp(App);
 app.component("BaseInput", BaseInput);
 app.component("BaseButton", BaseButton);
+app.component("Loader", Loader);
 app.use(VueHighlightJS);
 app.mount("#app");
