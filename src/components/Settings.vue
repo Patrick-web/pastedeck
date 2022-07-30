@@ -67,7 +67,7 @@ background: linear-gradient(to right, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00f
         ></div>
         <input
           type="range"
-          class="absolute inset-0 opacity-0"
+          class="absolute inset-0 opacity-0 w-full h-full"
           min="0"
           max="360"
           @input="changeHue"

@@ -22,13 +22,16 @@
       />
       <div
         ref="pastesWrapper"
-        class="pastesWrapper w-full flex flex-col gap-4 grow pt-5 pb-40 lg:pb-10 px-5 overflow-y-auto"
+        class="pastesWrapper w-full gap-4 grid xl:grid-cols-3 sm:grid-cols-2 grow pt-5 pb-40 lg:pb-10 px-5 overflow-y-auto"
       >
-        <div class="skeleton-loaders" v-if="fetchingPastes">
+        <div
+          class="skeleton-loaders gap-4 sm:w-[65vw] w-[100vw] grid xl:grid-cols-3 sm:grid-cols-3 h-full"
+          v-if="fetchingPastes"
+        >
           <div
-            v-for="i in 5"
+            v-for="i in 60"
             :key="i"
-            class="skeleton-box w-full h-[100px] my-5 rounded-xl"
+            class="skeleton-box w-full h-[100px] rounded-xl"
           ></div>
         </div>
         <transition-group

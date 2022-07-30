@@ -15,9 +15,9 @@
     <pre
       v-highlightjs="sourcecode"
       v-if="paste.paste_type == 'code'"
-      class="font-light w-full"
+      class="font-light w-full h-full"
     >
-      <code class="w-full text-sm -mb-10 -mt-5" @click="showFullPaste = true">{{ paste.text_content.length > 200
+      <code class="w-full h-full text-sm -mb-10 -mt-5" @click="showFullPaste = true">{{ paste.text_content.length > 200
           ? paste.text_content.substring(0, 200) + "...."
           : paste.text_content }}</code>
       </pre>
@@ -48,8 +48,10 @@
         @click="showFullPaste = !showFullPaste"
         v-if="paste.paste_type == 'image'"
         :class="[
-          showFullPaste ? 'fixed z-50 center-abs w-[80%] h-auto' : '',
-          ' rounded-xl self-start h-full',
+          showFullPaste
+            ? 'fixed z-50 center-abs max-w-[90%] h-auto m-auto max-h-[90%]'
+            : '',
+          ' rounded-xl self-start max-w-full max-h-[90%]',
         ]"
         :src="paste.file_url"
       />
@@ -140,9 +142,9 @@
         <pre
           v-highlightjs="sourcecode"
           v-if="paste.paste_type == 'code'"
-          class="font-light w-full"
+          class="font-light w-full h-full"
         >
-      <code class="w-full rounded-xl text-sm" >{{ 
+      <code class="w-full h-full rounded-xl text-sm" >{{ 
            paste.text_content }}</code>
       </pre>
       </div>
@@ -150,7 +152,7 @@
         @click="showFullPaste = null"
         :class="[
           showFullPaste ? '' : 'hidden',
-          'w-[50px] h-[80px] -bottom-10 left-[45%] rounded-full flex justify-center pt-3 fixed bg-red-500 z-[60] drop-shadow-2xl animate__animated animate__fast animate__slideInUp',
+          'w-[50px] h-[80px] -bottom-10 left-[45%] rounded-full flex justify-center pt-3 fixed bg-red-500 z-[60] drop-shadow-2xl z-[80] animate__animated animate__fast animate__slideInUp',
         ]"
       >
         <img class="w-[20px] icon" src="../assets/x-icon.svg" />

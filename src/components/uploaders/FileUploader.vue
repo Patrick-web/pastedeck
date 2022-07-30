@@ -23,8 +23,7 @@
         <p
           class="absolute left-[50%] -translate-x-[50%] w-[85%] pointer-events-none text-sm font-light px-4 py-2 rounded-full bg-primary-light -bottom-[30%]"
         >
-          Max 5mb | For 24hrs
-        </p>
+          Max {{ formatBytes(MAXUPLOADSIZE) }}        </p>
       </button>
     </div>
     <div
@@ -52,7 +51,8 @@
       </div>
       <div>
         <p v-if="exceededMaxUpload" class="text-sm">
-          You have exceeded the upload limit. Some file(s) will been
+          You have exceeded the upload limit of
+          {{ formatBytes(MAXUPLOADSIZE) }}. Some file(s) will been
           <span
             class="text-sm w-[70px] font-bold text-red-900 bg-red-300 px-2 py-1 rounded-full"
           >
@@ -140,7 +140,7 @@ export default {
       expandedImage: null,
       uploadedCount: 0,
       uploading: false,
-      MAXUPLOADSIZE: 5e6,
+      MAXUPLOADSIZE: 1e8,
       exceededMaxUpload: false,
     };
   },

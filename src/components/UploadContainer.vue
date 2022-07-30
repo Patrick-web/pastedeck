@@ -4,7 +4,7 @@
       showContainer == true
         ? 'animate__animated animate__fadeInUp animate__faster'
         : 'hidden lg:flex',
-      'upload-container',
+      'upload-container max-w-[560px]',
     ]"
   >
     <div
@@ -12,7 +12,7 @@
     >
       <div class="paste-type group" @click="activePasteBox = 'text'">
         <svg
-          class="group-hover:rotate-180 w-full"
+          class="group-hover:rotate-180"
           viewBox="0 0 100 100"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -33,7 +33,7 @@
 
       <div class="paste-type group" @click="activePasteBox = 'images'">
         <svg
-          class="group-hover:rotate-145 w-full"
+          class="group-hover:rotate-145"
           viewBox="0 0 210 204"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
