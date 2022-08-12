@@ -2,7 +2,7 @@
   <div
     :class="[
       copied ? 'bg-green-300' : 'bg-base-color',
-      'paste-card rounded-xl px-5 py-5 relative flex flex-col',
+      'paste-card rounded-xl px-5 py-5 max-w-[90vw] relative flex flex-col',
     ]"
   >
     <p v-if="paste.paste_type == 'text'" class="font-light break-all">
