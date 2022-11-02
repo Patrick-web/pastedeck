@@ -1,0 +1,6 @@
+{
+    "startCommand": "pnpm run dev",
+    "env": {
+      "VITE_SUPABASE_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51bHN1enVydHdwbHpraGZ6eGNlIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NDkzMjAyODMsImV4cCI6MTk2NDg5NjI4M30.kbgaUsu99Q_EgG840kBK5Vdj8_qxZLl3izmOBh4BvhE"
+    }
+  }
