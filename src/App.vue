@@ -43,6 +43,11 @@
             :paste="paste"
           />
         </transition-group>
+          <div
+          v-if="fetchedPastes < totalNumberOfPastes "
+          v-element-visibility="fetchMorePastes"
+            class="skeleton-box w-full h-full rounded-xl"
+          ></div>
       </div>
     </div>
     <settings
@@ -63,10 +68,13 @@ import PasteTypeSwitcher from "./components/PasteTypeSwitcher.vue";
 import PasteCard from "./components/PasteCard.vue";
 import Settings from "./components/Settings.vue";
 import AuthManager from "./components/AuthManager.vue";
+import { vElementVisibility } from '@vueuse/components'
 import {
   supabase,
   getPastesByPassword,
   getAllPastes,
+  getLimitedPastes,
+  getTotalNumberOfPastes,
 } from "./supabase/index.js";
 export default {
   data() {
@@ -78,6 +86,8 @@ export default {
       fetchingPastes: false,
       showAuthContainer: true,
       passwordObj: null,
+      totalNumberOfPastes:0,
+      fetchedPastes:0,
     };
   },
   computed: {
@@ -89,13 +99,17 @@ export default {
     },
   },
   methods: {
+    fetchMorePastes(isVisible){
+      console.log(isVisible)
+      console.log("fetching more")
+    },
     listenOnPastes() {
       supabase
         .from("pastes")
         .on("INSERT", async () => {
-          //  this.pastes.unshift(payload.new);
-          //  this.$refs.pastesWrapper.scrollTo(0, 0);
-          this.getPastes();
+           this.pastes.unshift(payload.new);
+           this.$refs.pastesWrapper.scrollTo(0, 0);
+          // this.getPastes();
         })
         .subscribe();
     },
@@ -107,12 +121,13 @@ export default {
         this.fetchingPastes = true;
         if (this.passwordObj.access_level == "ADMIN") {
           localStorage.setItem("AdminKey", this.passwordObj.share_password);
-          const { error, pastes } = await getAllPastes();
+          const { error, pastes } = await getLimitedPastes(this.fetchedPastes, this.fetchedPastes+100);
           if (error) {
             alert(error.message);
           } else {
             this.pastes = pastes;
             console.log(pastes);
+            this.fetchedPastes+=100
           }
         } else {
           const { error, pastes } = await getPastesByPassword(
@@ -123,6 +138,7 @@ export default {
           } else {
             this.pastes = pastes;
             console.log(pastes);
+            this.fetchedPastes+=100
           }
         }
       } catch (e) {
@@ -138,7 +154,10 @@ export default {
     Settings,
     AuthManager,
   },
-  async mounted() {
+  async created() {
+    console.log("Am alive")
+    const {count,error} = await getTotalNumberOfPastes()
+    this.totalNumberOfPastes = count ?? 0;
     this.listenOnPastes();
   },
 };

@@ -4,6 +4,14 @@ const supabaseUrl = "https://nulsuzurtwplzkhfzxce.supabase.co";
 const supabaseKey = import.meta.env.VITE_SUPABASE_KEY;
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
+export async function getTotalNumberOfPastes(){
+  let { count, error } = await supabase
+    .from("pastes")
+    .select("*",{count:'exact', head: true})
+
+    return {count, error}
+}
+
 export async function getPasswordInfo(password) {
   let { data, error } = await supabase
     .from("share-passwords")
@@ -31,7 +39,14 @@ export async function getAllPastes() {
     .order("created_at", { ascending: false });
   return { pastes, error };
 }
-
+export async function getLimitedPastes(start,end) {
+  let { data: pastes, error } = await supabase
+    .from("pastes")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .range(start,end)
+  return { pastes, error };
+}
 export async function uploadTextBasedPaste(paste) {
   const { data, error } = await supabase
     .from("pastes")
