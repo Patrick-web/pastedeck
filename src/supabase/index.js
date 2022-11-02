@@ -4,6 +4,17 @@ const supabaseUrl = "https://nulsuzurtwplzkhfzxce.supabase.co";
 const supabaseKey = import.meta.env.VITE_SUPABASE_KEY || process.env.VITE_SUPABASE_KEY;
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
+
+export async function getNumberOfPastes(){
+ 
+  let { count, error } = await supabase
+  .from("pastes")
+  .select("*", {count:'exact', head: true})
+
+return { count, error };
+  
+}
+
 export async function getPasswordInfo(password) {
   let { data, error } = await supabase
     .from("share-passwords")
