@@ -7,7 +7,7 @@
   >
     <div class="sticky top-0 z-10 bg-primary-color rounded-full">
       <button
-        class="relative rounded-3xl bg-btn-color flex justify-center items-center w-full py-5 mb-5 group lg:hover:saturate-150 lg:hover:rounded-xl"
+        class="relative rounded-3xl bg-btn-color flex justify-center items-center w-full py-5 mb-5 group sm:hover:saturate-150 sm:hover:rounded-xl"
       >
         <input
           ref="fileInput"

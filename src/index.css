@@ -22,13 +22,13 @@
     @apply absolute left-1/2 transform -translate-x-1/2;
   }
   .upload-container {
-    @apply flex flex-col justify-between relative items-center lg:gap-5 gap-3 pt-3 pb-8 px-3 bg-base-color xl:drop-shadow-xl w-full lg:h-screen h-[90%] rounded-3xl lg:rounded-none;
+    @apply flex flex-col justify-between relative items-center sm:gap-5 gap-3 pt-3 pb-8 px-3 bg-base-color xl:drop-shadow-xl w-full sm:h-screen h-[90%] rounded-3xl sm:rounded-none;
   }
   .paste-type {
     @apply w-full cursor-pointer relative flex justify-center items-center w-[80%];
   }
   .paste-type-text {
-    @apply text-sm lg:text-base font-normal z-10 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2;
+    @apply text-sm sm:text-base font-normal z-10 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2;
   }
   .paste-box {
     @apply grow w-full;

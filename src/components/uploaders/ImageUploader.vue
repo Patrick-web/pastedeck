@@ -6,7 +6,7 @@
     class="paste-box image-paste p-3 gap-3 grid grid-cols-2 max-h-full overflow-y-auto overflow-x-hidden"
   >
     <button
-      class="relative rounded-3xl bg-btn-color flex justify-center items-center w-full h-[120px] group lg:hover:saturate-150 lg:hover:rounded-xl"
+      class="relative rounded-3xl bg-btn-color flex justify-center items-center w-full h-[120px] group sm:hover:saturate-150 sm:hover:rounded-xl"
     >
       <input
         ref="imageInput"

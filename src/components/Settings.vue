@@ -14,9 +14,9 @@
     class="fixed w-screen h-screen py-5 inset-0 z-40 backdrop-blur flex justify-center items-center bg-[rgba(0,0,0,0.25)]"
   >
     <div
-      class="w-[80%] lg:w-[30%] p-5 bg-base-color rounded-[40px] animate__animated animate__fadeInUp animate__faster"
+      class="w-[80%] sm:w-[30%] p-5 bg-base-color rounded-[40px] animate__animated animate__fadeInUp animate__faster"
     >
-      <p class="text-center lg:text-3xl text-2xl font-bold mb-5">Settings</p>
+      <p class="text-center sm:text-3xl text-2xl font-bold mb-5">Settings</p>
       <button
         @click="toggleDarkMode(!darkOn)"
         :class="[

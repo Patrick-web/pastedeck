@@ -3,7 +3,7 @@
     class="fixed inset-0 z-50 bg-black/10 backdrop-blur-sm grid place-items-center"
   >
     <div
-      class="w-[80%] lg:w-[30%] max-w-[50%] max-h-[50%] p-5 bg-base-color flex flex-col items-center justify-center gap-5 rounded-3xl animate__animated animate__fadeInUp animate__faster"
+      class="w-[80%] sm:w-[30%] max-w-[50%] max-h-[50%] p-5 bg-base-color flex flex-col items-center justify-center gap-5 rounded-3xl animate__animated animate__fadeInUp animate__faster"
     >
       <base-input
         inputLabel="Enter password"
@@ -51,9 +51,6 @@ export default {
       this.$emit("getPastes", data);
       this.$refs.passwordInput.clearInput();
     },
-  },
-  mounted() {
-    this.adminKey = localStorage.getItem("AdminKey") || "";
   },
   emits: ["getPastes"],
 };

@@ -1,10 +1,12 @@
 <template>
   <div
+    ref="card"
     :class="[
       copied ? 'bg-green-300' : 'bg-base-color',
-      'paste-card rounded-xl px-5 py-5 max-w-[90vw] relative flex flex-col',
+      'paste-card rounded-xl px-5 py-5 max-w-[90vw] relative flex flex-col justify-between',
     ]"
   >
+  <div>
     <p v-if="paste.paste_type == 'text'" class="font-light break-all">
       {{
         paste.text_content.length > 200
@@ -21,41 +23,24 @@
           ? paste.text_content.substring(0, 200) + "...."
           : paste.text_content }}</code>
       </pre>
-    <div
-      v-if="
-        ((paste.paste_type == 'text' || paste.paste_type == 'code') &&
-          paste.text_content.length > 200) ||
-        urlPrviewer.type
-      "
-      class="flex items-center justify-center"
-    >
-      <button
-        @click="showFullPaste = true"
-        class="p-3 rounded-[40px] bg-btn-color border-none hover:rounded-xl"
-      >
-        <img
-          src="../assets/expand-icon.svg"
-          alt="expand icon"
-          title="Show full paste"
-          class="w-[15px] icon"
-        />
-      </button>
-    </div>
+
+
     <button
+      @click="showFullPaste = !showFullPaste"
       class="w-full flex justify-start items-center max-h-[200px] overflow-hidden"
     >
       <img
-        @click="showFullPaste = !showFullPaste"
         v-if="paste.paste_type == 'image'"
         :class="[
           showFullPaste
             ? 'fixed z-50 center-abs max-w-[90%] h-auto m-auto max-h-[90%]'
             : '',
-          ' rounded-xl self-start max-w-full max-h-[90%]',
+          ' rounded-xl self-start w-[240px] h-[150px] object-cover',
         ]"
         :src="paste.file_url"
       />
     </button>
+
     <div v-if="paste.paste_type == 'file'">
       <div class="flex items-center gap-2">
         <img
@@ -68,94 +53,79 @@
         </div>
       </div>
     </div>
-    <button
-      title="copy paste"
-      @click="copyToClipboard"
-      v-if="paste.paste_type == 'text' || paste.paste_type == 'code'"
-      :class="[
-        copied ? 'bg-green-200' : 'bg-app-bg',
-        'z-5 rounded-xl hover:rounded-[40px] absolute lg:top-2 lg:bottom-auto bottom-2 right-2 p-3',
-      ]"
-    >
-      <img
-        class="w-[10px] icon"
-        src="../assets/copy-icon.svg"
-        alt="copy icon"
-      />
-    </button>
-    <button
-      @click="downloadFile"
-      v-if="paste.paste_type == 'file' || paste.paste_type == 'image'"
-      class="z-5 rounded-xl hover:rounded-full bg-app-bg absolute top-2 right-2 p-3"
-    >
-      <img
-        class="w-[10px] icon"
-        src="../assets/dowload-icon.svg"
-        alt="download icon"
-        v-if="!fetchingDowload"
-      />
-      <svg
-        v-else
-        class="animate-spin h-4 w-4 text-white"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-      >
-        <circle
-          class="opacity-25"
-          cx="12"
-          cy="12"
-          r="10"
-          stroke="currentColor"
-          stroke-width="4"
-        ></circle>
-        <path
-          class="opacity-75"
-          fill="currentColor"
-          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-        ></path>
-      </svg>
-    </button>
+
     <a :href="blobURL" ref="dl" :download="paste.text_content"></a>
+  </div>
 
-    <div
-      v-if="showFullPaste"
-      @click.self="showFullPaste = null"
-      class="fixed w-screen h-screen backdrop-blur lg:py-5 inset-0 z-40 flex justify-center items-center bg-[rgba(0,0,0,0.25)]"
-    >
-      <div
-        :class="[
-          paste.paste_type == 'image' ? '' : 'animate__fadeInDown',
-          'overflow-y-auto rounded-xl max-h-full w-[100%] lg:px-5  animate__animated animate__faster',
-        ]"
-      >
-        <div v-if="urlPrviewer.type" class="h-[100vh] w-full bg-app-bg">
-          <div v-html="urlPrviewer.html" class="w-[100%]"></div>
-        </div>
-
-        <p
-          v-if="paste.paste_type == 'text' && paste.text_content.length > 200"
-          class="font-light bg-app-bg p-5 rounded-xl"
-        >
-          {{ paste.text_content }}
-        </p>
-        <pre
-          v-highlightjs="sourcecode"
-          v-if="paste.paste_type == 'code'"
-          class="font-light w-full h-full"
-        >
-      <code class="w-full h-full rounded-xl text-sm" >{{ 
-           paste.text_content }}</code>
-      </pre>
-      </div>
+    <div class="w-full mt-4 flex gap-4 items-center justify-center">
       <button
-        @click="showFullPaste = null"
+        v-if="paste.paste_type == 'text' || paste.paste_type == 'code'"
+        @click="$emit('openPaste')"
+        class="bg-app-bg rounded-xl hover:rounded-[40px] hover:bg-active-color hover:scale-110 hover:shadow-xl p-3"
+      >
+        <img
+          v-if="is_link(paste.text_content)"
+          src="../assets/link-icon.svg"
+          alt="link icon"
+          class="w-[15px] icon"
+        />
+        <img
+          v-else
+          src="../assets/expand-icon.svg"
+          alt="expand icon"
+          class="w-[15px] icon"
+        />
+      </button>
+
+      <button
+        title="copy paste"
+        @click="copyToClipboard"
+        v-if="paste.paste_type == 'text' || paste.paste_type == 'code'"
         :class="[
-          showFullPaste ? '' : 'hidden',
-          'w-[50px] h-[80px] -bottom-10 left-[45%] rounded-full flex justify-center pt-3 fixed bg-red-500 z-[60] drop-shadow-2xl z-[80] animate__animated animate__fast animate__slideInUp',
+          copied ? 'bg-green-200' : 'bg-app-bg',
+          'rounded-xl hover:rounded-[40px] hover:bg-active-color hover:scale-110 hover:shadow-xl p-3',
         ]"
       >
-        <img class="w-[20px] icon" src="../assets/x-icon.svg" />
+        <img
+          class="w-[10px] icon"
+          src="../assets/copy-icon.svg"
+          alt="copy icon"
+        />
+      </button>
+      <button
+        @click="downloadFile"
+        v-if="paste.paste_type == 'file' || paste.paste_type == 'image'"
+        class="bg-app-bg rounded-xl hover:rounded-[40px] hover:bg-active-color hover:scale-110 hover:shadow-xl p-3"
+      >
+        <img
+          class="w-[10px] icon"
+          src="../assets/dowload-icon.svg"
+          alt="download icon"
+          v-if="!fetchingDowload"
+        />
+        <Loader v-else />
+      </button>
+      <button
+        title="edit paste"
+        @click="$emit('pasteToEdit')"
+        v-if="paste.paste_type == 'text' || paste.paste_type == 'code'"
+        class='bg-app-bg rounded-xl hover:rounded-[40px] hover:bg-active-color hover:scale-110 hover:shadow-xl p-3'
+      >
+        <img
+          class="w-[13px] icon"
+          src="../assets/edit-icon.svg"
+          alt="edit icon"
+        />
+      </button>
+      <button
+        @click="$emit('pasteToDelete')"
+        class='bg-app-bg rounded-xl hover:rounded-[40px] hover:bg-active-color hover:scale-110 hover:shadow-xl p-3'
+      >
+        <img
+          class="w-[13px] icon"
+          src="../assets/delete-icon.svg"
+          alt="delete icon"
+        />
       </button>
     </div>
   </div>
@@ -163,6 +133,8 @@
 
 <script>
 import { supabase } from "../supabase/index.js";
+import { isLink } from "../utils/index.js"
+import Loader from "./reusables/Loader.vue"
 import zipicon from "../assets/zip-icon.png";
 import pdficon from "../assets/pdf-icon.png";
 import spreadsheeticon from "../assets/spreadsheet-icon.png";
@@ -272,16 +244,31 @@ export default {
       if (text.startsWith("http") && urlRegex.test(text)) {
         if (text.includes("https://twitter.com")) {
           this.urlPrviewer.type = "Twitter";
-          this.urlPrviewer.html = `<iframe border=0 frameborder=0 height=25 class="w-[100%] lg:w-[500px] h-[800px]" src="https://twitframe.com/show?url=${text}"></iframe>`;
+          this.urlPrviewer.html = `<iframe border=0 frameborder=0 height=25 class="w-[100%] sm:w-[500px] h-[800px]" src="https://twitframe.com/show?url=${text}"></iframe>`;
         }
         if (text.includes("youtu")) {
           let video_id = text.split("=")[1] || text.split("be/")[1];
           this.urlPrviewer.type = "YouTube";
-          this.urlPrviewer.html = `<iframe id="player" type="text/html" class="w-[100%] h-[200px] lg:h-[600px] " src="https://www.youtube.com/embed/${video_id}?enablejsapi=1" frameborder="0"></iframe>`;
+          this.urlPrviewer.html = `<iframe id="player" type="text/html" class="w-[100%] h-[200px] sm:h-[600px] " src="https://www.youtube.com/embed/${video_id}?enablejsapi=1" frameborder="0"></iframe>`;
         }
       }
     },
+    viewPaste(){
+      if(isLink(this.paste.text_content)){
+        window.open(this.paste.text_content, '_blank');
+      }else{
+        const position = {
+          x: this.$refs.card.getBoundingClientRect().left, 
+          y: this.$refs.card.getBoundingClientRect().top, 
+        }
+        this.$emit("openPaste", {paste:this.paste, position})
+      } 
+    },
+    is_link(text){
+      return isLink(text)
+    }
   },
+  emits:['pasteToEdit','pasteToDelete','openPaste'],
   mounted() {
     this.parseText(this.paste.text_content);
   },

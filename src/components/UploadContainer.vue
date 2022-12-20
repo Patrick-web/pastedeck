@@ -3,16 +3,16 @@
     :class="[
       showContainer == true
         ? 'animate__animated animate__fadeInUp animate__faster'
-        : 'hidden lg:flex',
+        : 'hidden sm:flex',
       'upload-container max-w-[560px]',
     ]"
   >
     <div
-      class="options-wrapper flex place-items-center lg:grid lg:grid-cols-2 lg:gap-5 gap-1"
+      class="options-wrapper flex place-items-center sm:grid sm:grid-cols-2 sm:gap-5 gap-1"
     >
       <div class="paste-type group" @click="activePasteBox = 'text'">
         <svg
-          class="group-hover:rotate-180 min-w-[100px]"
+          class="group-hover:rotate-180 min-w-[70px] sm:min-w-[8vw]"
           viewBox="0 0 100 100"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -33,7 +33,7 @@
 
       <div class="paste-type group" @click="activePasteBox = 'images'">
         <svg
-          class="group-hover:rotate-145 min-w-[100px]"
+          class="group-hover:rotate-145 min-w-[70px] sm:min-w-[8vw]"
           viewBox="0 0 210 204"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -53,7 +53,7 @@
 
       <div class="paste-type group" @click="activePasteBox = 'files'">
         <svg
-          class="group-hover:rotate-208 group-hover:-translate-x-2 group-hover:translate-y-3 min-w-[100px]"
+          class="group-hover:rotate-208 group-hover:-translate-x-2 group-hover:translate-y-3 min-w-[70px] sm:min-w-[8vw]"
           viewBox="0 0 225 202"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -78,7 +78,7 @@
       <div class="paste-type group" @click="activePasteBox = 'code'">
         <svg
           viewBox="0 0 232 230"
-          class="group-hover:rotate-90 min-w-[100px]"
+          class="group-hover:rotate-90 min-w-[70px] sm:min-w-[8vw]"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
@@ -123,7 +123,7 @@
         />
         <button
           @click="upload"
-          class="bg-btn-color px-10 py-2 mb-5 mt-2 rounded-[40px] font-medium hover:rounded-xl lg:hover:saturate-150"
+          class="bg-btn-color px-10 py-2 mb-5 mt-2 rounded-[40px] font-medium hover:rounded-xl sm:hover:saturate-150"
         >
           Upload
         </button>
@@ -134,7 +134,7 @@
     @click="$emit('toggleContainer')"
     :class="[
       showContainer ? 'hidden' : '',
-      'lg:hidden center-x-abs bottom-[80px] rounded-full p-9 fixed bg-standout-bg z-20 drop-shadow-2xl',
+      'sm:hidden center-x-abs bottom-[80px] rounded-full p-9 fixed bg-standout-bg z-20 drop-shadow-2xl',
     ]"
   >
     <img class="w-[20px]" src="../assets/plus-icon.svg" alt="plus icon" />
@@ -143,7 +143,7 @@
     @click="$emit('toggleContainer')"
     :class="[
       showContainer ? '' : 'hidden',
-      'lg:hidden w-[80px] h-[50px] bottom-0 -right-10 center-y-abs rounded-full p-3 fixed bg-red-500 z-20 drop-shadow-2xl animate__animated animate__fast animate__slideInRight',
+      'sm:hidden w-[80px] h-[50px] bottom-0 -right-10 center-y-abs rounded-full p-3 fixed bg-red-500 z-20 drop-shadow-2xl animate__animated animate__fast animate__slideInRight',
     ]"
   >
     <img class="w-[20px]" src="../assets/x-icon.svg" alt="close icon" />

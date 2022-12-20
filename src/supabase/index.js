@@ -1,19 +1,21 @@
 import { createClient } from "@supabase/supabase-js";
 
+export var password = ""
+
 const supabaseKey = import.meta.env.VITE_SUPABASE_KEY || process.env.VITE_SUPABASE_KEY;
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || process.env.VITE_SUPABASE_URL;
 
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
 
-export async function getNumberOfPastes(){
- 
-  let { count, error } = await supabase
-  .from("pastes")
-  .select("*", {count:'exact', head: true})
+export async function getNumberOfPastes() {
 
-return { count, error };
-  
+  let { count, error } = await supabase
+    .from("pastes")
+    .select("*", { count: 'exact', head: true })
+
+  return { count, error };
+
 }
 
 export async function getPasswordInfo(password) {
@@ -36,6 +38,16 @@ export async function getPastesByPassword(password) {
   return { pastes, error };
 }
 
+export async function getPaginatedPastes(page = { start: 0, end: 50 }) {
+  let { data: pastes, error } = await supabase
+    .from("pastes")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .range(page.start, page.end)
+  return { pastes, error };
+}
+
+
 export async function getAllPastes() {
   let { data: pastes, error } = await supabase
     .from("pastes")
@@ -44,11 +56,34 @@ export async function getAllPastes() {
   return { pastes, error };
 }
 
+export async function getPages() {
+
+  const { count, error } = await supabase
+    .from('pastes')
+    .select('*', { count: 'exact', head: true })
+  const pageSize = 50;
+
+  const numPages = Math.ceil(count / pageSize);
+
+  const pages = Array.from({ length: numPages }, (v, i) => {
+    const start = i * pageSize;
+    const end = start + pageSize;
+    return { start, end };
+  });
+
+  return pages;
+}
+
 export async function uploadTextBasedPaste(paste) {
   const { data, error } = await supabase
     .from("pastes")
     .insert([{ paste_type: paste.type, text_content: paste.textContent }]);
 
+  return { data, error };
+}
+
+export async function updateTextBasedPaste(text, id) {
+  const { data, error } = await supabase.from("pastes").update({ text_content: text }).eq('id', id)
   return { data, error };
 }
 
@@ -74,6 +109,13 @@ export async function uploadImagePaste(imageFile) {
 
   return { data: newPaste, error: nerror };
 }
+
+export async function deletePaste(id) {
+  const { error } = await supabase
+    .from("pastes").delete().eq('id', id)
+  return { error }
+}
+
 function formatBytes(bytes, decimals = 2) {
   if (bytes === 0) return "0 Bytes";
 

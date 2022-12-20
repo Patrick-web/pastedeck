@@ -4,25 +4,24 @@
     <div
       :class="[
         showUploadContainer ? 'bg-[#00000033]' : 'bg-none h-0 w-0',
-        'shade h-screen  lg:bg-none flex justify-center items-start lg:min-w-[300px] w-full z-30 fixed lg:relative lg:w-[25%] lg:p-0 p-5',
+        'shade h-screen  sm:bg-none flex justify-center items-start sm:min-w-[300px] w-full z-30 fixed sm:relative sm:w-[25%] sm:p-0 p-5',
       ]"
       @click.self="showUploadContainer = false"
-      v-if="passwordObj && passwordObj.access_level == 'ADMIN'"
     >
       <UploadContainer
         :showContainer="showUploadContainer"
-        v-on:toggleContainer="showUploadContainer = !showUploadContainer"
+        @toggleContainer="showUploadContainer = !showUploadContainer"
       />
     </div>
     <div
-      class="lg:w-[75%] w-full h-full px-0 lg:px-10 flex flex-col items-center"
+      class="sm:w-[75%] w-full h-full px-0 sm:px-10 flex flex-col items-center"
     >
       <paste-type-switcher
-        v-on:showPastesOfType="(type) => (activePasteType = type)"
+        @showPastesOfType="(type) => (activePasteType = type)"
       />
       <div
         ref="pastesWrapper"
-        class="pastesWrapper w-full gap-4 grid xl:grid-cols-3 sm:grid-cols-2 grow pt-5 pb-40 lg:pb-10 px-5 overflow-y-auto"
+        class="pastesWrapper w-full gap-4 grid xl:grid-cols-3 sm:grid-cols-2 grow pt-5 pb-40 sm:pb-10 px-5 overflow-y-auto"
       >
         <div
           class="skeleton-loaders gap-4 sm:w-[65vw] w-[100vw] grid xl:grid-cols-3 sm:grid-cols-3 h-full"
@@ -41,8 +40,24 @@
             v-for="paste in filteredPastes"
             :key="paste.id"
             :paste="paste"
+            @openPaste="setPasteToView(paste)"
+            @pasteToEdit="setPasteToEdit(paste)"
+            @pasteToDelete="setPasteToDelete(paste)"
           />
         </transition-group>
+      </div>
+      <PasteUpdater v-if="pasteToEdit" :pasteToEdit="pasteToEdit" @closeUpdater="pasteToEdit = null" />
+      <PasteDeleter v-if="pasteToDelete" :pasteToDelete="pasteToDelete" @closeDeleter="pasteToDelete = null" />
+      <PasteViewer v-if="pasteToView" :paste="pasteToView" @closeViewer="pasteToView=null" />
+      <div class="flex items-center gap-4 justify-center w-[96%] py-2 bg-app-bg shadow-2xl"> 
+        <button 
+          v-for="page,index in pages" 
+          :key="page.start"
+          @click="currentPageIndex=index; getPastes()"
+          :class="[currentPageIndex===index? 'bg-active-color rounded-3xl':'rounded-xl bg-base-color','px-4 py-1 text-sm sm:hover:bg-active-color']" 
+        > 
+          {{index+1}} 
+        </button>  
       </div>
     </div>
     <settings
@@ -63,11 +78,15 @@ import PasteTypeSwitcher from "./components/PasteTypeSwitcher.vue";
 import PasteCard from "./components/PasteCard.vue";
 import Settings from "./components/Settings.vue";
 import AuthManager from "./components/AuthManager.vue";
+import PasteViewer from "./components/PasteViewer.vue";
+import PasteUpdater from "./components/PasteUpdater.vue";
+import PasteDeleter from "./components/PasteDeleter.vue";
 import {
   supabase,
-  getPastesByPassword,
-  getAllPastes,
+  getPaginatedPastes,
+  getPages,
 } from "./supabase/index.js";
+
 export default {
   data() {
     return {
@@ -78,6 +97,11 @@ export default {
       fetchingPastes: false,
       showAuthContainer: true,
       passwordObj: null,
+      pages:[],
+      currentPageIndex:0,
+      pasteToView: null,
+      pasteToEdit: null,
+      pasteToDelete: null,
     };
   },
   computed: {
@@ -92,44 +116,54 @@ export default {
     listenOnPastes() {
       supabase
         .from("pastes")
-        .on("INSERT", async () => {
-          //  this.pastes.unshift(payload.new);
-          //  this.$refs.pastesWrapper.scrollTo(0, 0);
-          this.getPastes();
+        .on("INSERT", async (payload) => {
+          this.pastes.unshift(payload.new);
+          this.$refs.pastesWrapper.scrollTop = 0;
+        })
+        .on("UPDATE", async (payload) => {
+          console.log("Update detected")
+          console.log(payload)
+          const indexOfUpdatedPaste = this.pastes.findIndex(paste=>paste.id === payload.new.id)
+          if(indexOfUpdatedPaste===-1) return
+          this.pastes[indexOfUpdatedPaste].text_content = payload.new.text_content
+        })
+        .on("DELETE", async (payload) => {
+          console.log("Delete detected")
+          console.log(payload)
+          this.pastes = this.pastes.filter(paste=>paste.id !== payload.old.id)
         })
         .subscribe();
     },
-    async getPastes(payload = this.passwordObj) {
-      this.passwordObj = payload || this.passwordObj;
-      console.log(this.passwordObj);
+    async getPastes() {
+      this.pastes = [] 
       this.showAuthContainer = false;
       try {
         this.fetchingPastes = true;
-        if (this.passwordObj.access_level == "ADMIN") {
-          localStorage.setItem("AdminKey", this.passwordObj.share_password);
-          const { error, pastes } = await getAllPastes();
+          const { error, pastes } = await getPaginatedPastes(this.pages[this.currentPageIndex]);
+          
           if (error) {
             alert(error.message);
           } else {
             this.pastes = pastes;
+            this.listenOnPastes();
             console.log(pastes);
+            this.$refs.pastesWrapper.scrollTo = 0
           }
-        } else {
-          const { error, pastes } = await getPastesByPassword(
-            this.passwordObj.share_password
-          );
-          if (error) {
-            alert(error.message);
-          } else {
-            this.pastes = pastes;
-            console.log(pastes);
-          }
-        }
       } catch (e) {
         alert(e);
       }
       this.fetchingPastes = false;
     },
+    setPasteToView(paste){
+      this.pasteToView = paste
+      console.log(this.pasteToView)
+    },
+    setPasteToEdit(paste){
+      this.pasteToEdit=paste
+    },
+    setPasteToDelete(paste){
+      this.pasteToDelete=paste
+    }
   },
   components: {
     UploadContainer,
@@ -137,9 +171,12 @@ export default {
     PasteCard,
     Settings,
     AuthManager,
+    PasteViewer,
+    PasteUpdater,
+    PasteDeleter,
   },
   async mounted() {
-    this.listenOnPastes();
+    this.pages = await getPages()
   },
 };
 </script>
