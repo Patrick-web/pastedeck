@@ -9,11 +9,14 @@ const io = new Server({
   maxHttpBufferSize: 1e8,
 });
 
+let clients = []
+
 io.on("connection", (socket) => {
   console.log(`socket ${socket.id} connected`);
 
-  // Send a message to the connected client
-  socket.emit('connection-success', { message: 'You have successfully connected to the server' });
+  clients.push(socket.id)
+
+  socket.emit('connection-success', { message: 'You have successfully connected to the server :roocket', clients: clients });
 
   socket.broadcast.emit('new-client-connected', { message: 'A new client has connected', id: socket.id });
 
@@ -23,6 +26,7 @@ io.on("connection", (socket) => {
   })
 
   socket.on("disconnect", (reason) => {
+    clients = clients.filter(client => client != socket.id)
     io.emit('client-disconneted', { message: `A Client disconnected`, id: socket.id });
   });
 });

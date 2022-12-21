@@ -14,8 +14,9 @@
       />
     </div>
     <div
-      class="sm:w-[75%] w-full h-full px-0 sm:px-10 flex flex-col items-center"
+      class="sm:w-[75%] relative w-full h-full px-0 sm:px-10 flex flex-col items-center"
     >
+      <LiveIndicator v-if="socketConnected" :peers="peers"/>
     <transition enter-active-class="animate__animated animate__faster animate__slideInDown">
       <paste-type-switcher
         v-if="pastes.length > 0"
@@ -24,8 +25,9 @@
     </transition>
       <div
         ref="pastesWrapper"
-        class="pastesWrapper w-full gap-4 grid justify-center items-strwetch xl:grid-cols-3 sm:grid-cols-2 pt-5 pb-40 sm:pb-10 px-5 overflow-y-auto"
+        class="pastesWrapper w-full gap-4 grid justify-center items-stretch xl:grid-cols-3 sm:grid-cols-2 pt-5 pb-40 sm:pb-10 px-5 overflow-y-auto"
       >
+    
 
       <!-- skeleton-loaders -->
         <div
@@ -112,6 +114,7 @@ import AuthManager from "./components/AuthManager.vue";
 import PasteViewer from "./components/PasteViewer.vue";
 import PasteUpdater from "./components/PasteUpdater.vue";
 import PasteDeleter from "./components/PasteDeleter.vue";
+import LiveIndicator from "./components/LiveIndicator.vue";
 
 import { supabase, getPaginatedPastes, getPages } from "./supabase/index.js";
 
@@ -133,6 +136,7 @@ export default {
       pasteToEdit: null,
       pasteToDelete: null,
       socketConnected: false,
+      peers:[],
     };
   },
   computed: {
@@ -216,22 +220,31 @@ export default {
     PasteViewer,
     PasteUpdater,
     PasteDeleter,
+    LiveIndicator,
   },
   async mounted() {
     const socket = io("wss://pastedeck.deno.dev")
     window.socket = socket;
 
-    socket.on("connection-success",(msg)=>{
-      console.log(msg)
+    socket.on("connection-success",(data)=>{
+      console.log(data)
       this.socketConnected = true
+      this.peers = data.clients
     })
 
     socket.on('new-client-connected', (data) => {
       console.log(data);
+      this.peers.push(data.id)
     });
 
     socket.on('client-disconneted', (data) => {
       console.log(data);
+      this.peers = this.peers.filter(peer=>peer!=data.id)
+    });
+
+    socket.on('disconnect', () => {
+      console.log('Disconnected from server');
+      this.socketConnected = false
     });
 
     socket.on("new-paste",(paste)=>{
