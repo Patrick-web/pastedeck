@@ -8,18 +8,18 @@
     >
       <p
         v-if="paste.paste_type == 'text'"
-        class="font-light bg-app-bg p-5 rounded-xl"
+        class="font-light bg-app-bg p-5 rounded-xl whitespace-pre-wrap"
       >
         {{ paste.text_content }}
       </p>
 
-      <pre
+      <p
         v-highlightjs="sourcecode"
         v-if="paste.paste_type == 'code'"
-        class="font-light w-full"
+        class="font-light w-full whitespace-pre-wrap"
       >
           <code class="w-full h-full rounded-xl text-sm" >{{ paste.text_content }}</code>
-      </pre>
+      </p>
       <div v-if="paste.paste_type==='image'" class="h-[90vh] flex items-center justify-center"> 
         <img :src="paste.file_url" class="w-[90%] max-h-[90%] object-cover self-center animate__animated animate__faster animate__zoomIn"/>
       </div>
