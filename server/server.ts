@@ -5,7 +5,8 @@ const io = new Server({
   cors: {
     origin: false,
     methods: ["GET", "POST"]
-  }
+  },
+  maxHttpBufferSize: 1e8,
 });
 
 io.on("connection", (socket) => {

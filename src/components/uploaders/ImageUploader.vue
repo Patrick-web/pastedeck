@@ -63,6 +63,7 @@
 import ProgressBar from "../reusables/ProgressBar.vue";
 import { uploadImagePaste } from "../../supabase/index.js";
 import { formatBytes } from "../../utils/index.js";
+
 export default {
   components: {
     ProgressBar,
@@ -107,25 +108,29 @@ export default {
     emitImages() {
       let emittedCount = 0;
       this.selectedImages.forEach((file) => {
-        const blobURL = URL.createObjectURL(file);
-        const paste = {        
-          paste_type: "image",
-          text_content: file.name,
-          file_name: file.name,
-          file_type: "image",
-          file_url: blobURL,
-          file_size: formatBytes(file.size),
-          live_paste: true,
-        }
-        window.socket.emit("new-paste", paste)
-        this.uploadedCount += 1;
-        emittedCount += 1;
-        if (emittedCount === this.selectedImages.length) {
-          this.uploading = false;
-          this.selectedImages = [];
-          this.imagePreviews = []
-          this.uploadedCount = 0;
-        }
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const buffer = event.target.result;
+          const paste = {        
+            paste_type: "image",
+            text_content: file.name,
+            file_name: file.name,
+            file_type: "image",
+            file_buffer: buffer,
+            file_size: formatBytes(file.size),
+            live_paste: true,
+          }
+          window.socket.emit("new-paste", paste)
+          this.uploadedCount += 1;
+          emittedCount += 1;
+          if (emittedCount === this.selectedImages.length) {
+            this.uploading = false;
+            this.selectedImages = [];
+            this.imagePreviews= [];
+            this.uploadedCount = 0;
+          }
+        };
+        reader.readAsArrayBuffer(file);
       });
     },
   },

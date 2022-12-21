@@ -118,7 +118,10 @@
 
 <script>
 import ProgressBar from "../reusables/ProgressBar.vue";
+
 import { uploadFilePaste } from "../../supabase/index.js";
+import { formatBytes } from "../../utils/index.js";
+
 import zipicon from "../../assets/zip-icon.png";
 import pdficon from "../../assets/pdf-icon.png";
 import spreadsheeticon from "../../assets/spreadsheet-icon.png";
@@ -129,6 +132,7 @@ import videofileicon from "../../assets/video-icon.png";
 import imagefileicon from "../../assets/imagefile-icon.png";
 import apkfileicon from "../../assets/apk-icon.png";
 import textfileicon from "../../assets/textfile-icon.png";
+
 export default {
   components: {
     ProgressBar,
@@ -235,25 +239,29 @@ export default {
     emitFiles() {
       let emittedCount = 0;
       this.selectedFilesCopy.forEach((file) => {
-        const blobURL = URL.createObjectURL(file);
-        const paste = {        
-          paste_type: "file",
-          text_content: file.name,
-          file_name: file.name,
-          file_type: file.type,
-          file_url: blobURL,
-          file_size: this.formatBytes(file.size),
-          live_paste: true,
-        }
-        window.socket.emit("new-paste", paste)
-        this.uploadedCount += 1;
-        emittedCount += 1;
-        if (emittedCount === this.selectedFilesCopy.length) {
-          this.uploading = false;
-          this.selectedFilesCopy = [];
-          this.selectedFiles= [];
-          this.uploadedCount = 0;
-        }
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const buffer = event.target.result;
+          const paste = {        
+            paste_type: "file",
+            text_content: file.name,
+            file_name: file.name,
+            file_type: file.type,
+            file_buffer: buffer,
+            file_size: formatBytes(file.size),
+            live_paste: true,
+          }
+          window.socket.emit("new-paste", paste)
+          this.uploadedCount += 1;
+          emittedCount += 1;
+          if (emittedCount === this.selectedFilesCopy.length) {
+            this.uploading = false;
+            this.selectedFilesCopy = [];
+            this.selectedFiles= [];
+            this.uploadedCount = 0;
+          }
+        };
+        reader.readAsArrayBuffer(file);
       });
     },
     formatBytes(bytes, decimals = 2) {

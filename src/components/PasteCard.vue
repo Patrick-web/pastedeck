@@ -3,7 +3,7 @@
     ref="card"
     :class="[
       copied ? 'bg-green-300' : 'bg-base-color',
-      paste.live_paste?'border-8 border-standout-bg rounded-3xl':'rounded-xl',
+      paste.live_paste?'border-4 border-standout-bg rounded-3xl':'rounded-xl',
       'paste-card px-5 py-5 max-w-[90vw] relative flex flex-col justify-between',
     ]"
   >

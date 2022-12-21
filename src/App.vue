@@ -237,6 +237,12 @@ export default {
     socket.on("new-paste",(paste)=>{
       console.log("New Paste")
       console.log(paste)
+      if(paste.paste_type === "file" || paste.paste_type === "image"){
+        // Create a file object from the buffer or string
+        const file = new File([paste.file_buffer], paste.file_name, { type: paste.file_type });
+        paste["file_url"] = URL.createObjectURL(file);
+      }
+      console.log(paste)
       this.pastes.unshift(paste)
     })
   },
