@@ -3,7 +3,7 @@ import { Server } from "https://deno.land/x/socket_io@0.2.0/mod.ts";
 
 const io = new Server({
   cors: {
-    origin: ["http://localhost:3000", "https://pastedeck.xyz", "https://pastedeck.pages.dev"],
+    origin: false,
     methods: ["GET", "POST"]
   }
 });
