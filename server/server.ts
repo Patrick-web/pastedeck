@@ -3,7 +3,7 @@ import { Server } from "https://deno.land/x/socket_io@0.2.0/mod.ts";
 
 const io = new Server({
   cors: {
-    origin: "*",
+    origin: ["http://localhost:3000", "https://pastedeck.xyz", "https://pastedeck.pages.dev"],
     methods: ["GET", "POST"]
   }
 });
@@ -26,6 +26,7 @@ io.on("connection", (socket) => {
   });
 });
 
+io.on("disconnect")
 
 await serve(io.handler(), {
   port: 4000,
