@@ -3,7 +3,8 @@
     ref="card"
     :class="[
       copied ? 'bg-green-300' : 'bg-base-color',
-      'paste-card rounded-xl px-5 py-5 max-w-[90vw] relative flex flex-col justify-between',
+      paste.live_paste?'border-8 border-standout-bg rounded-3xl':'rounded-xl',
+      'paste-card px-5 py-5 max-w-[90vw] relative flex flex-col justify-between',
     ]"
   >
   <div>
@@ -25,21 +26,12 @@
       </pre>
 
 
-    <button
-      @click="showFullPaste = !showFullPaste"
-      class="w-full flex justify-start items-center max-h-[200px] overflow-hidden"
-    >
       <img
         v-if="paste.paste_type == 'image'"
-        :class="[
-          showFullPaste
-            ? 'fixed z-50 center-abs max-w-[90%] h-auto m-auto max-h-[90%]'
-            : '',
-          ' rounded-xl self-start w-[240px] h-[150px] object-cover',
-        ]"
+        @click="$emit('openPaste')"
+        class="cursor-pointer rounded-xl self-start w-full h-[150px] object-contain drop-shadow-md"
         :src="paste.file_url"
       />
-    </button>
 
     <div v-if="paste.paste_type == 'file'">
       <div class="flex items-center gap-2">
@@ -54,17 +46,17 @@
       </div>
     </div>
 
-    <a :href="blobURL" ref="dl" :download="paste.text_content"></a>
+    <a :href="paste.live_paste?paste.file_url:blobURL" ref="dl" :download="paste.text_content"></a>
   </div>
 
     <div class="w-full mt-4 flex gap-4 items-center justify-center">
       <button
-        v-if="paste.paste_type == 'text' || paste.paste_type == 'code'"
+        v-if="paste.paste_type == 'text' || paste.paste_type == 'code' || paste.paste_type == 'image'"
         @click="$emit('openPaste')"
         class="bg-app-bg rounded-xl hover:rounded-[40px] hover:bg-active-color hover:scale-110 hover:shadow-xl p-3"
       >
         <img
-          v-if="is_link(paste.text_content)"
+          v-if="paste.paste_type==='text' && is_link(paste.text_content)"
           src="../assets/link-icon.svg"
           alt="link icon"
           class="w-[15px] icon"
@@ -108,7 +100,7 @@
       <button
         title="edit paste"
         @click="$emit('pasteToEdit')"
-        v-if="paste.paste_type == 'text' || paste.paste_type == 'code'"
+        v-if="!paste.live_paste && paste.paste_type == 'text' || paste.paste_type == 'code'"
         class='bg-app-bg rounded-xl hover:rounded-[40px] hover:bg-active-color hover:scale-110 hover:shadow-xl p-3'
       >
         <img
@@ -119,6 +111,7 @@
       </button>
       <button
         @click="$emit('pasteToDelete')"
+        v-if="!paste.live_paste"
         class='bg-app-bg rounded-xl hover:rounded-[40px] hover:bg-active-color hover:scale-110 hover:shadow-xl p-3'
       >
         <img
@@ -214,6 +207,11 @@ export default {
       );
     },
     async downloadFile() {
+      const link = this.$refs.dl;
+      if(this.paste.live_paste){
+        link.click();
+        return
+      }
       this.fetchingDowload = true;
       if (!this.blobURL) {
         const filename = this.paste.file_url.replace(
@@ -228,7 +226,6 @@ export default {
           return;
         }
         this.blobURL = window.URL.createObjectURL(data);
-        const link = this.$refs.dl;
         setTimeout(() => {
           link.click();
         }, 1000);

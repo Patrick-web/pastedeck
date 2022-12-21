@@ -106,27 +106,33 @@
           class="h-[8px] w-[40%] hidden bg-primary-light border-none rounded-full mb-2"
         />
         <text-uploader
-          :beginTextUpload="beginTextUpload"
           v-if="activePasteBox == 'text'"
+          ref="textUploader"
         />
         <code-uploader
-          :beginCodeUpload="beginCodeUpload"
           v-if="activePasteBox == 'code'"
+          ref="codeUploader"
         />
         <file-uploader
           v-if="activePasteBox == 'files'"
-          :beginFileUpload="beginFileUpload"
+          ref="fileUploader"
         />
         <image-uploader
-          :beginImageUpload="beginImageUpload"
           v-if="activePasteBox == 'images'"
+          ref="imageUploader"
         />
-        <button
-          @click="upload"
-          class="bg-btn-color px-10 py-2 mb-5 mt-2 rounded-[40px] font-medium hover:rounded-xl sm:hover:saturate-150"
-        >
-          Upload
-        </button>
+        <div class="flex gap-2">
+          <button
+            @click="upload"
+            class="bg-btn-color px-10 py-2 mb-5 mt-2 rounded-[40px] font-medium hover:rounded-xl sm:hover:saturate-150"
+          >
+            Upload
+          </button>
+          <button
+            @click="emit"
+            class="bg-btn-color px-10 py-2 mb-5 mt-2 rounded-[40px] font-medium hover:rounded-xl sm:hover:saturate-150"
+          >Emit</button>
+        </div>
       </div>
     </div>
   </div>
@@ -134,7 +140,7 @@
     @click="$emit('toggleContainer')"
     :class="[
       showContainer ? 'hidden' : '',
-      'sm:hidden center-x-abs bottom-[80px] rounded-full p-9 fixed bg-standout-bg z-20 drop-shadow-2xl',
+      'sm:hidden center-x-abs bottom-[120px] rounded-full p-9 fixed bg-standout-bg z-20 drop-shadow-2xl',
     ]"
   >
     <img class="w-[20px]" src="../assets/plus-icon.svg" alt="plus icon" />
@@ -169,26 +175,36 @@ export default {
       activePasteBox: "text",
       pasteText: "",
       pasteCode: "",
-      beginImageUpload: 1,
-      beginFileUpload: 1,
-      beginTextUpload: 1,
-      beginCodeUpload: 1,
       uploading: false,
     };
   },
   methods: {
-    async upload() {
+     upload() {
       if (this.activePasteBox == "text") {
-        this.beginTextUpload = Math.random();
+        this.$refs.textUploader.uploadText()
       }
       if (this.activePasteBox == "code") {
-        this.beginCodeUpload = Math.random();
+        this.$refs.codeUploader.uploadCode()
       }
       if (this.activePasteBox == "images") {
-        this.beginImageUpload = Math.random();
+        this.$refs.imageUploader.uploadImages()
       }
       if (this.activePasteBox == "files") {
-        this.beginFileUpload = Math.random();
+        this.$refs.fileUploader.uploadFiles()
+      }
+    },
+    emit() {
+      if (this.activePasteBox == "text") {
+        this.$refs.textUploader.emitText()
+      }
+      if (this.activePasteBox == "code") {
+        this.$refs.codeUploader.emitCode()
+      }
+      if (this.activePasteBox == "images") {
+        this.$refs.imageUploader.emitImages()
+      }
+      if (this.activePasteBox == "files") {
+        this.$refs.fileUploader.emitFiles()
       }
     },
   },

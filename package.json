@@ -13,6 +13,7 @@
     "@vueuse/core": "^9.4.0",
     "bottom-sheet-vue3": "^1.0.2",
     "link-preview-js": "^2.1.13",
+    "socket.io": "^4.5.4",
     "vue": "^3.2.25",
     "vue3-highlightjs": "^1.0.5"
   },

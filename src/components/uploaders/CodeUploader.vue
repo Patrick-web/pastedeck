@@ -54,18 +54,22 @@ export default {
         return;
       }
     },
+    emitCode(){
+      const paste = {
+        id: Math.random() * 1000,
+        paste_type: "code",
+        text_content: this.pasteCode,
+        live_paste: true,
+      };
+      this.uploading = true;
+      window.socket.emit("new-paste", paste)
+      this.pasteCode = "";
+      this.uploading = false;
+
+    }
   },
   components: {
     Loader,
-  },
-  watch: {
-    beginCodeUpload() {
-      console.log("Uploading Code");
-      this.uploadCode();
-    },
-  },
-  props: {
-    beginCodeUpload: Number,
   },
 };
 </script>

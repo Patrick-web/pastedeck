@@ -1,5 +1,16 @@
 <template>
+  <button
+    @click="showAuthForm = true"
+    :class="[
+      showAuthForm ? 'sm:bottom-[-50px] bottom-[80px] right-[-100px] sm:right-[-50px]' : 'bottom-[80px] sm:bottom-[-5px] right-[-20px] sm:right-[-15px]',
+      'fixed p-2 bg-standout-bg z-40 rounded-full w-[60px] sm:rotate-[45deg]',
+    ]"
+  >
+    <img class="w-6 sm:rotate-[-45deg]" src="../../src/assets/unlock-icon.svg" alt="" />
+  </button>
   <div
+    v-if="showAuthForm"
+    @click.self="showAuthForm = false"
     class="fixed inset-0 z-50 bg-black/10 backdrop-blur-sm grid place-items-center"
   >
     <div
@@ -36,6 +47,8 @@ export default {
       passwordError: "",
       loading: false,
       adminKey: "",
+      authenticated: false,
+      showAuthForm: false,
     };
   },
   methods: {

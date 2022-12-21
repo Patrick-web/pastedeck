@@ -21,6 +21,7 @@
 
 <script>
 import { uploadTextBasedPaste } from "../../supabase/index.js";
+import { emitTextBasedPaste } from "../../realtime/index.js";
 
 export default {
   data() {
@@ -54,15 +55,19 @@ export default {
         return;
       }
     },
-  },
-  watch: {
-    beginTextUpload() {
-      console.log("Uploading Text");
-      this.uploadText();
+    async emitText() {
+      const paste = {
+        id: Math.random() * 1000,
+        paste_type: "text",
+        text_content: this.pasteText,
+        live_paste: true,
+      };
+      this.uploading = true;
+      window.socket.emit("new-paste", paste)
+      this.pasteText = "";
+      this.uploading = false;
     },
-  },
-  props: {
-    beginTextUpload: Number,
+
   },
 };
 </script>

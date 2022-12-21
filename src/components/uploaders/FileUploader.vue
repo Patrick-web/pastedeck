@@ -211,7 +211,7 @@ export default {
     removeFile(index) {
       this.selectedFiles.splice(index, 1);
     },
-    async uploadFile() {
+    async uploadFiles() {
       this.uploading = true;
       console.log(this.selectedFilesCopy.length);
       for (const file of this.selectedFilesCopy) {
@@ -232,6 +232,30 @@ export default {
         this.uploadedCount = 0;
       }, 2000);
     },
+    emitFiles() {
+      let emittedCount = 0;
+      this.selectedFilesCopy.forEach((file) => {
+        const blobURL = URL.createObjectURL(file);
+        const paste = {        
+          paste_type: "file",
+          text_content: file.name,
+          file_name: file.name,
+          file_type: file.type,
+          file_url: blobURL,
+          file_size: this.formatBytes(file.size),
+          live_paste: true,
+        }
+        window.socket.emit("new-paste", paste)
+        this.uploadedCount += 1;
+        emittedCount += 1;
+        if (emittedCount === this.selectedFilesCopy.length) {
+          this.uploading = false;
+          this.selectedFilesCopy = [];
+          this.selectedFiles= [];
+          this.uploadedCount = 0;
+        }
+      });
+    },
     formatBytes(bytes, decimals = 2) {
       if (bytes === 0) return "0 Bytes";
 
@@ -243,15 +267,6 @@ export default {
 
       return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
     },
-  },
-  watch: {
-    beginFileUpload() {
-      console.log("Uploading Files");
-      this.uploadFile();
-    },
-  },
-  props: {
-    beginFileUpload: Number,
   },
 };
 </script>

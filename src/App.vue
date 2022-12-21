@@ -1,6 +1,6 @@
 <template>
   <div class="app bg-app-bg w-screen h-screen flex items-start justify-center">
-    <auth-manager v-if="showAuthContainer" @getPastes="getPastes" />
+    <auth-manager v-if="showAuthContainer" @getPastes="fetchPages" />
     <div
       :class="[
         showUploadContainer ? 'bg-[#00000033]' : 'bg-none h-0 w-0',
@@ -16,48 +16,79 @@
     <div
       class="sm:w-[75%] w-full h-full px-0 sm:px-10 flex flex-col items-center"
     >
+    <transition enter-active-class="animate__animated animate__faster animate__slideInDown">
       <paste-type-switcher
+        v-if="pastes.length > 0"
         @showPastesOfType="(type) => (activePasteType = type)"
       />
+    </transition>
       <div
         ref="pastesWrapper"
-        class="pastesWrapper w-full gap-4 grid xl:grid-cols-3 sm:grid-cols-2 grow pt-5 pb-40 sm:pb-10 px-5 overflow-y-auto"
+        class="pastesWrapper w-full gap-4 grid justify-center items-strwetch xl:grid-cols-3 sm:grid-cols-2 pt-5 pb-40 sm:pb-10 px-5 overflow-y-auto"
       >
+
+      <!-- skeleton-loaders -->
         <div
           class="skeleton-loaders gap-4 sm:w-[65vw] w-[100vw] grid xl:grid-cols-3 sm:grid-cols-3 h-full"
           v-if="fetchingPastes"
         >
-          <div
-            v-for="i in 60"
-            :key="i"
-            class="skeleton-box w-full h-[100px] rounded-xl"
-          ></div>
+            <div
+              v-for="i in 60"
+              :key="i"
+              class="skeleton-box w-full h-[100px] rounded-xl"
+            ></div>
         </div>
-        <transition-group
-          enter-active-class="animate__animated animate__fadeInDown"
-        >
-          <paste-card
-            v-for="paste in filteredPastes"
-            :key="paste.id"
-            :paste="paste"
-            @openPaste="setPasteToView(paste)"
-            @pasteToEdit="setPasteToEdit(paste)"
-            @pasteToDelete="setPasteToDelete(paste)"
-          />
-        </transition-group>
+      <!-- skeleton-loaders -->
+      
+      <!-- Uploaded Pastes -->
+          <transition-group
+            enter-active-class="animate__animated animate__fadeInDown"
+          >
+            <paste-card
+              v-for="paste in filteredPastes"
+              :key="paste.id"
+              :paste="paste"
+              @openPaste="setPasteToView(paste)"
+              @pasteToEdit="setPasteToEdit(paste)"
+              @pasteToDelete="setPasteToDelete(paste)"
+            />
+          </transition-group>
+      <!-- Uploaded Pastes -->
       </div>
-      <PasteUpdater v-if="pasteToEdit" :pasteToEdit="pasteToEdit" @closeUpdater="pasteToEdit = null" />
-      <PasteDeleter v-if="pasteToDelete" :pasteToDelete="pasteToDelete" @closeDeleter="pasteToDelete = null" />
-      <PasteViewer v-if="pasteToView" :paste="pasteToView" @closeViewer="pasteToView=null" />
-      <div class="flex items-center gap-4 justify-center w-[96%] py-2 bg-app-bg shadow-2xl"> 
-        <button 
-          v-for="page,index in pages" 
+      <PasteUpdater
+        v-if="pasteToEdit"
+        :pasteToEdit="pasteToEdit"
+        @closeUpdater="pasteToEdit = null"
+      />
+      <PasteDeleter
+        v-if="pasteToDelete"
+        :pasteToDelete="pasteToDelete"
+        @closeDeleter="pasteToDelete = null"
+      />
+      <PasteViewer
+        v-if="pasteToView"
+        :paste="pasteToView"
+        @closeViewer="pasteToView = null"
+      />
+      <div
+        class="flex items-center gap-4 translate-y-[-170%] sm:translate-y-0 justify-center w-[96%] py-2 bg-app-bg shadow-2xl"
+      >
+        <button
+          v-for="(page, index) in pages"
           :key="page.start"
-          @click="currentPageIndex=index; getPastes()"
-          :class="[currentPageIndex===index? 'bg-active-color rounded-3xl':'rounded-xl bg-base-color','px-4 py-1 text-sm sm:hover:bg-active-color']" 
-        > 
-          {{index+1}} 
-        </button>  
+          @click="
+            currentPageIndex = index;
+            getPastes();
+          "
+          :class="[
+            currentPageIndex === index
+              ? 'bg-active-color rounded-3xl'
+              : 'rounded-xl bg-base-color',
+            'px-4 py-1 text-sm sm:hover:bg-active-color',
+          ]"
+        >
+          {{ index + 1 }}
+        </button>
       </div>
     </div>
     <settings
@@ -81,11 +112,10 @@ import AuthManager from "./components/AuthManager.vue";
 import PasteViewer from "./components/PasteViewer.vue";
 import PasteUpdater from "./components/PasteUpdater.vue";
 import PasteDeleter from "./components/PasteDeleter.vue";
-import {
-  supabase,
-  getPaginatedPastes,
-  getPages,
-} from "./supabase/index.js";
+
+import { supabase, getPaginatedPastes, getPages } from "./supabase/index.js";
+
+import { io } from "https://cdn.socket.io/4.4.1/socket.io.esm.min.js";
 
 export default {
   data() {
@@ -97,11 +127,12 @@ export default {
       fetchingPastes: false,
       showAuthContainer: true,
       passwordObj: null,
-      pages:[],
-      currentPageIndex:0,
+      pages: [],
+      currentPageIndex: 0,
       pasteToView: null,
       pasteToEdit: null,
       pasteToDelete: null,
+      socketConnected: false,
     };
   },
   computed: {
@@ -121,49 +152,60 @@ export default {
           this.$refs.pastesWrapper.scrollTop = 0;
         })
         .on("UPDATE", async (payload) => {
-          console.log("Update detected")
-          console.log(payload)
-          const indexOfUpdatedPaste = this.pastes.findIndex(paste=>paste.id === payload.new.id)
-          if(indexOfUpdatedPaste===-1) return
-          this.pastes[indexOfUpdatedPaste].text_content = payload.new.text_content
+          console.log("Update detected");
+          console.log(payload);
+          const indexOfUpdatedPaste = this.pastes.findIndex(
+            (paste) => paste.id === payload.new.id
+          );
+          if (indexOfUpdatedPaste === -1) return;
+          this.pastes[indexOfUpdatedPaste].text_content =
+            payload.new.text_content;
         })
         .on("DELETE", async (payload) => {
-          console.log("Delete detected")
-          console.log(payload)
-          this.pastes = this.pastes.filter(paste=>paste.id !== payload.old.id)
+          console.log("Delete detected");
+          console.log(payload);
+          this.pastes = this.pastes.filter(
+            (paste) => paste.id !== payload.old.id
+          );
         })
         .subscribe();
     },
+    async fetchPages(){
+      this.pages = await getPages();
+      this.getPastes()
+    },
     async getPastes() {
-      this.pastes = [] 
+      this.pastes = [];
       this.showAuthContainer = false;
       try {
         this.fetchingPastes = true;
-          const { error, pastes } = await getPaginatedPastes(this.pages[this.currentPageIndex]);
-          
-          if (error) {
-            alert(error.message);
-          } else {
-            this.pastes = pastes;
-            this.listenOnPastes();
-            console.log(pastes);
-            this.$refs.pastesWrapper.scrollTo = 0
-          }
+        const { error, pastes } = await getPaginatedPastes(
+          this.pages[this.currentPageIndex]
+        );
+
+        if (error) {
+          alert(error.message);
+        } else {
+          this.pastes = pastes;
+          this.listenOnPastes();
+          console.log(pastes);
+          this.$refs.pastesWrapper.scrollTo = 0;
+        }
       } catch (e) {
         alert(e);
       }
       this.fetchingPastes = false;
     },
-    setPasteToView(paste){
-      this.pasteToView = paste
-      console.log(this.pasteToView)
+    setPasteToView(paste) {
+      this.pasteToView = paste;
+      console.log(this.pasteToView);
     },
-    setPasteToEdit(paste){
-      this.pasteToEdit=paste
+    setPasteToEdit(paste) {
+      this.pasteToEdit = paste;
     },
-    setPasteToDelete(paste){
-      this.pasteToDelete=paste
-    }
+    setPasteToDelete(paste) {
+      this.pasteToDelete = paste;
+    },
   },
   components: {
     UploadContainer,
@@ -176,7 +218,27 @@ export default {
     PasteDeleter,
   },
   async mounted() {
-    this.pages = await getPages()
+    const socket = io("ws://localhost:4000")
+    window.socket = socket;
+
+    socket.on("connection-success",(msg)=>{
+      console.log(msg)
+      this.socketConnected = true
+    })
+
+    socket.on('new-client-connected', (data) => {
+      console.log(data);
+    });
+
+    socket.on('client-disconneted', (data) => {
+      console.log(data);
+    });
+
+    socket.on("new-paste",(paste)=>{
+      console.log("New Paste")
+      console.log(paste)
+      this.pastes.unshift(paste)
+    })
   },
 };
 </script>

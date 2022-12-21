@@ -1,14 +1,17 @@
 <template>
-  <div
-    @click.self="$emit('closeDeleter')"
-    class="fixed top-0 left-0 w-screen h-screen backdrop-blur sm:py-5 inset-0 z-40 flex justify-center items-center bg-[rgba(0,0,0,0.25)]"
-  >
-  <div class='flex flex-col items-center gap-2 rounded-3xl sm:px-5  bg-app-bg p-5 animate__animated animate__faster animate__zoomIn'>
-      <p class="text-2xl font-bold">Delete this ? </p>
+  <div @click.self="$emit('closeDeleter')" class="modal">
+    <div
+      class="flex flex-col items-center gap-2 rounded-3xl sm:px-5 bg-app-bg p-5 animate__animated animate__faster animate__zoomIn"
+    >
+      <p class="text-2xl font-bold">Delete this ?</p>
       <div
-        class='paste-card bg-base-color rounded-xl px-5 py-5 max-w-[90vw] relative flex flex-col justify-between'>
+        class="paste-card bg-base-color rounded-xl px-5 py-5 max-w-[90vw] relative flex flex-col justify-between"
+      >
         <div>
-          <p v-if="pasteToDelete.paste_type == 'text'" class="font-light break-all">
+          <p
+            v-if="pasteToDelete.paste_type == 'text'"
+            class="font-light break-all"
+          >
             {{
               pasteToDelete.text_content.length > 200
                 ? pasteToDelete.text_content.substring(0, 200) + "...."
@@ -32,14 +35,18 @@
                 class="h-[40px] cursor-pointer group-hover:scale-105"
               />
               <div>
-                <p class="break-all font-light">{{ pasteToDelete.file_name }}</p>
-                <p class="text-sm break-all font-light">{{ pasteToDelete.file_size }}</p>
+                <p class="break-all font-light">
+                  {{ pasteToDelete.file_name }}
+                </p>
+                <p class="text-sm break-all font-light">
+                  {{ pasteToDelete.file_size }}
+                </p>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <div class="flex gap-4 items-center justify-center mt-2"> 
+      <div class="flex gap-4 items-center justify-center mt-2">
         <button
           @click="deletePaste"
           class="bg-red-500 border-2 border-red-500 px-8 py-2 rounded-[40px] font-medium hover:rounded-xl sm:hover:saturate-150"
@@ -54,12 +61,9 @@
           Abort
         </button>
       </div>
-
+    </div>
   </div>
-
-</div>
 </template>
-
 
 <script>
 import { deletePaste } from "../supabase/index.js";
@@ -75,7 +79,7 @@ import imagefileicon from "../assets/imagefile-icon.png";
 import apkfileicon from "../assets/apk-icon.png";
 import textfileicon from "../assets/textfile-icon.png";
 
-import Loader from "./reusables/Loader.vue"
+import Loader from "./reusables/Loader.vue";
 
 export default {
   data() {
@@ -83,13 +87,13 @@ export default {
       loading: false,
     };
   },
-  methods:{
-    async deletePaste(){
-      console.log("Deleting")
-      this.loading = true
-      await deletePaste(this.pasteToDelete.id) 
-      this.loading = false
-      this.$emit('closeDeleter')
+  methods: {
+    async deletePaste() {
+      console.log("Deleting");
+      this.loading = true;
+      await deletePaste(this.pasteToDelete.id);
+      this.loading = false;
+      this.$emit("closeDeleter");
     },
     fileicon(paste) {
       if (
@@ -128,19 +132,15 @@ export default {
 
       return unknownfileicon;
     },
-
   },
-  props:{
+  props: {
     pasteToDelete: Object,
   },
-  emits:['closeDeleter'],
-  components:{
+  emits: ["closeDeleter"],
+  components: {
     Loader,
-  }
-}
+  },
+};
 </script>
 
-<style lang="scss" scoped>
-
-</style>
-
+<style lang="scss" scoped></style>
