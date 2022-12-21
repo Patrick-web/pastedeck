@@ -218,7 +218,7 @@ export default {
     PasteDeleter,
   },
   async mounted() {
-    const socket = io("ws://localhost:4000")
+    const socket = io("ws://https://pastedeck.deno.dev")
     window.socket = socket;
 
     socket.on("connection-success",(msg)=>{
