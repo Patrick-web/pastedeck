@@ -2,11 +2,11 @@
   <button
     v-bind="$attrs"
     :type="buttonType"
-    class="active:rounded-2xl active:brightness-75 hover:brightness-[90%] px-5 py-3 shadow rounded-3xl font-bold"
+    class="active:rounded-2xl active:brightness-75 hover:brightness-[90%] px-5 py-3 rounded-3xl font-bold"
   >
     <slot></slot>
-    <p>
-      {{ buttonLabel }}
+    <p v-if="label">
+      {{ label }}
     </p>
   </button>
 </template>
@@ -14,11 +14,10 @@
 <script>
 export default {
   props: {
-    buttonLabel: {
-      default: "csdkmk",
+    label: {
       type: String,
     },
-    buttonType: {
+    type: {
       default: "button",
       type: String,
     },

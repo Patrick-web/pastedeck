@@ -75,13 +75,15 @@ background: linear-gradient(to right, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00f
         />
       </div>
 
-      <div class="w-full grid place-items-center mt-5">
-        <base-button
-          buttonLabel="Logout"
+      <!--
+        <div class="w-full grid place-items-center mt-5">
+          <base-button
+          label="Logout"
           @click="$emit('showAuthContainer')"
           class="bg-btn-color"
-        />
-      </div>
+          />
+          </div>
+          -->
     </div>
   </div>
 </template>
