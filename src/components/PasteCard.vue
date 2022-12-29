@@ -3,28 +3,29 @@
     ref="card"
     :class="[
       copied ? 'bg-green-300' : 'bg-base-color',
-      paste.live_paste?'border-4 border-standout-bg rounded-3xl':'rounded-xl',
+      paste.live_paste
+        ? 'border-4 border-standout-bg rounded-3xl'
+        : 'rounded-xl',
       'paste-card px-5 py-5 max-w-[90vw] relative flex flex-col justify-between',
     ]"
   >
-  <div>
-    <p v-if="paste.paste_type == 'text'" class="font-light break-all">
-      {{
-        paste.text_content.length > 200
-          ? paste.text_content.substring(0, 200) + "...."
-          : paste.text_content
-      }}
-    </p>
-    <pre
-      v-highlightjs="sourcecode"
-      v-if="paste.paste_type == 'code'"
-      class="font-light w-full h-full"
-    >
+    <div>
+      <p v-if="paste.paste_type == 'text'" class="font-light break-all">
+        {{
+          paste.text_content.length > 200
+            ? paste.text_content.substring(0, 200) + "...."
+            : paste.text_content
+        }}
+      </p>
+      <pre
+        v-highlightjs="sourcecode"
+        v-if="paste.paste_type == 'code'"
+        class="font-light w-full h-full overflow-hidden"
+      >
       <code class="w-full h-full text-sm -mb-10 -mt-5" @click="showFullPaste = true">{{ paste.text_content.length > 200
           ? paste.text_content.substring(0, 200) + "...."
           : paste.text_content }}</code>
       </pre>
-
 
       <img
         v-if="paste.paste_type == 'image'"
@@ -33,36 +34,67 @@
         :src="paste.file_url"
       />
 
-    <div v-if="paste.paste_type == 'file'">
-      <div class="flex items-center gap-2">
-        <img
-          :src="fileicon(paste)"
-          class="h-[40px] cursor-pointer group-hover:scale-105"
-        />
-        <div>
-          <p class="break-all font-light">{{ paste.file_name }}</p>
-          <p class="text-sm break-all font-light">{{ paste.file_size }}</p>
+      <div v-if="paste.paste_type == 'file'">
+        <div class="flex items-center gap-2">
+          <img
+            :src="fileicon(paste)"
+            class="h-[40px] cursor-pointer group-hover:scale-105"
+          />
+          <div>
+            <p class="break-all font-light">{{ paste.file_name }}</p>
+            <p class="text-sm break-all font-light">{{ paste.file_size }}</p>
+          </div>
         </div>
+      </div>
+
+      <a
+        :href="paste.live_paste ? paste.file_url : blobURL"
+        ref="dl"
+        :download="paste.text_content"
+      ></a>
+      <div
+        v-if="linkPreview"
+        class="rounded-2xl bg-app-bg p-2 w-full hover:saturate-200 hover:rounded-3xl"
+      >
+        <a :href="paste.text_content" target="__blank">
+          <img
+            :src="linkPreview.image"
+            class="h-[100px] w-full object-cover rounded-xl hover:rounded-2xl"
+          />
+          <p class="text-sm">{{ linkPreview.title }}</p>
+          <p class="font-light text-sm">
+            {{
+              linkPreview.description.length > 100
+                ? linkPreview.description.substring(0, 100) + "...."
+                : linkPreview.description
+            }}
+          </p>
+        </a>
       </div>
     </div>
 
-    <a :href="paste.live_paste?paste.file_url:blobURL" ref="dl" :download="paste.text_content"></a>
-  </div>
-
     <div class="w-full mt-4 flex gap-4 items-center justify-center">
       <button
-        v-if="paste.paste_type == 'text' || paste.paste_type == 'code' || paste.paste_type == 'image'"
-        @click="$emit('openPaste')"
+        v-if="paste.paste_type === 'text' && is_link(paste.text_content)"
+        @click="openLink(paste.text_content)"
         class="bg-app-bg rounded-xl hover:rounded-[40px] hover:bg-active-color hover:scale-110 hover:shadow-xl p-3"
       >
         <img
-          v-if="paste.paste_type==='text' && is_link(paste.text_content)"
           src="../assets/link-icon.svg"
           alt="link icon"
           class="w-[15px] icon"
         />
+      </button>
+      <button
+        v-if="
+          paste.paste_type == 'text' ||
+          paste.paste_type == 'code' ||
+          paste.paste_type == 'image'
+        "
+        @click="$emit('openPaste')"
+        class="bg-app-bg rounded-xl hover:rounded-[40px] hover:bg-active-color hover:scale-110 hover:shadow-xl p-3"
+      >
         <img
-          v-else
           src="../assets/expand-icon.svg"
           alt="expand icon"
           class="w-[15px] icon"
@@ -100,8 +132,11 @@
       <button
         title="edit paste"
         @click="$emit('pasteToEdit')"
-        v-if="!paste.live_paste && paste.paste_type == 'text' || paste.paste_type == 'code'"
-        class='bg-app-bg rounded-xl hover:rounded-[40px] hover:bg-active-color hover:scale-110 hover:shadow-xl p-3'
+        v-if="
+          (!paste.live_paste && paste.paste_type == 'text') ||
+          paste.paste_type == 'code'
+        "
+        class="bg-app-bg rounded-xl hover:rounded-[40px] hover:bg-active-color hover:scale-110 hover:shadow-xl p-3"
       >
         <img
           class="w-[13px] icon"
@@ -112,7 +147,7 @@
       <button
         @click="$emit('pasteToDelete')"
         v-if="!paste.live_paste"
-        class='bg-app-bg rounded-xl hover:rounded-[40px] hover:bg-active-color hover:scale-110 hover:shadow-xl p-3'
+        class="bg-app-bg rounded-xl hover:rounded-[40px] hover:bg-active-color hover:scale-110 hover:shadow-xl p-3"
       >
         <img
           class="w-[13px] icon"
@@ -126,8 +161,8 @@
 
 <script>
 import { supabase } from "../supabase/index.js";
-import { isLink } from "../utils/index.js"
-import Loader from "./reusables/Loader.vue"
+import { isLink } from "../utils/index.js";
+import Loader from "./reusables/Loader.vue";
 import zipicon from "../assets/zip-icon.png";
 import pdficon from "../assets/pdf-icon.png";
 import spreadsheeticon from "../assets/spreadsheet-icon.png";
@@ -146,10 +181,7 @@ export default {
       downloaded: false,
       showFullPaste: false,
       fetchingDowload: false,
-      urlPrviewer: {
-        type: null,
-        html: null,
-      },
+      linkPreview: null,
     };
   },
   props: {
@@ -208,9 +240,9 @@ export default {
     },
     async downloadFile() {
       const link = this.$refs.dl;
-      if(this.paste.live_paste){
+      if (this.paste.live_paste) {
         link.click();
-        return
+        return;
       }
       this.fetchingDowload = true;
       if (!this.blobURL) {
@@ -236,38 +268,40 @@ export default {
         this.fetchingDowload = false;
       }
     },
-    parseText(text) {
-      const urlRegex = /(https?:\/\/[^\s]+)/;
-      if (text.startsWith("http") && urlRegex.test(text)) {
-        if (text.includes("https://twitter.com")) {
-          this.urlPrviewer.type = "Twitter";
-          this.urlPrviewer.html = `<iframe border=0 frameborder=0 height=25 class="w-[100%] sm:w-[500px] h-[800px]" src="https://twitframe.com/show?url=${text}"></iframe>`;
-        }
-        if (text.includes("youtu")) {
-          let video_id = text.split("=")[1] || text.split("be/")[1];
-          this.urlPrviewer.type = "YouTube";
-          this.urlPrviewer.html = `<iframe id="player" type="text/html" class="w-[100%] h-[200px] sm:h-[600px] " src="https://www.youtube.com/embed/${video_id}?enablejsapi=1" frameborder="0"></iframe>`;
-        }
+    viewPaste() {
+      if (isLink(this.paste.text_content)) {
+        window.open(this.paste.text_content, "_blank");
+      } else {
+        const position = {
+          x: this.$refs.card.getBoundingClientRect().left,
+          y: this.$refs.card.getBoundingClientRect().top,
+        };
+        this.$emit("openPaste", { paste: this.paste, position });
       }
     },
-    viewPaste(){
-      if(isLink(this.paste.text_content)){
-        window.open(this.paste.text_content, '_blank');
-      }else{
-        const position = {
-          x: this.$refs.card.getBoundingClientRect().left, 
-          y: this.$refs.card.getBoundingClientRect().top, 
-        }
-        this.$emit("openPaste", {paste:this.paste, position})
-      } 
+    is_link(text) {
+      return isLink(text);
     },
-    is_link(text){
-      return isLink(text)
-    }
+    openLink(link) {
+      window.open(link, "_blank");
+    },
+    fetchLinkPreview(link) {
+      fetch(`https://link-preview.deno.dev/?url=${link}`)
+        .then((resp) => resp.json())
+        .then((data) => {
+          if (!data.title || !data.image || !data.description) return;
+          this.linkPreview = data;
+        });
+    },
   },
-  emits:['pasteToEdit','pasteToDelete','openPaste'],
+  emits: ["pasteToEdit", "pasteToDelete", "openPaste"],
   mounted() {
-    this.parseText(this.paste.text_content);
+    if (
+      this.paste.paste_type == "text" &&
+      this.is_link(this.paste.text_content)
+    ) {
+      this.fetchLinkPreview(this.paste.text_content);
+    }
   },
 };
 </script>

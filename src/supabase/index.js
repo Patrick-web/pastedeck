@@ -1,21 +1,20 @@
 import { createClient } from "@supabase/supabase-js";
 
-export var password = ""
+export var password = "";
 
-const supabaseKey = import.meta.env.VITE_SUPABASE_KEY || process.env.VITE_SUPABASE_KEY;
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+const supabaseKey =
+  import.meta.env.VITE_SUPABASE_KEY || process.env.VITE_SUPABASE_KEY;
+const supabaseUrl =
+  import.meta.env.VITE_SUPABASE_URL || process.env.VITE_SUPABASE_URL;
 
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
-
 export async function getNumberOfPastes() {
-
   let { count, error } = await supabase
     .from("pastes")
-    .select("*", { count: 'exact', head: true })
+    .select("*", { count: "exact", head: true });
 
   return { count, error };
-
 }
 
 export async function getPasswordInfo(password) {
@@ -43,10 +42,9 @@ export async function getPaginatedPastes(page = { start: 0, end: 50 }) {
     .from("pastes")
     .select("*")
     .order("created_at", { ascending: false })
-    .range(page.start, page.end)
+    .range(page.start, page.end);
   return { pastes, error };
 }
-
 
 export async function getAllPastes() {
   let { data: pastes, error } = await supabase
@@ -57,10 +55,9 @@ export async function getAllPastes() {
 }
 
 export async function getPages() {
-
   const { count, error } = await supabase
-    .from('pastes')
-    .select('*', { count: 'exact', head: true })
+    .from("pastes")
+    .select("*", { count: "exact", head: true });
   const pageSize = 50;
 
   const numPages = Math.ceil(count / pageSize);
@@ -83,7 +80,10 @@ export async function uploadTextBasedPaste(paste) {
 }
 
 export async function updateTextBasedPaste(text, id) {
-  const { data, error } = await supabase.from("pastes").update({ text_content: text }).eq('id', id)
+  const { data, error } = await supabase
+    .from("pastes")
+    .update({ text_content: text })
+    .eq("id", id);
   return { data, error };
 }
 
@@ -111,9 +111,8 @@ export async function uploadImagePaste(imageFile) {
 }
 
 export async function deletePaste(id) {
-  const { error } = await supabase
-    .from("pastes").delete().eq('id', id)
-  return { error }
+  const { error } = await supabase.from("pastes").delete().eq("id", id);
+  return { error };
 }
 
 function formatBytes(bytes, decimals = 2) {
@@ -152,4 +151,17 @@ export async function uploadFilePaste(file) {
   ]);
 
   return { data: newPaste, error: nerror };
+}
+
+export async function searchForPaste(query) {
+  console.log(query);
+  const { data, error } = await supabase
+    .from("pastes")
+    .select("*")
+    .textSearch("text_content", `${query}`, {
+      type: "websearch",
+      config: "english",
+    });
+  console.log(data[0]);
+  return { data, error };
 }

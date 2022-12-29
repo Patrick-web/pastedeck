@@ -19,7 +19,7 @@
         </button>
         <button
           @click="$emit('closeUpdater')"
-          class="border-2 border-amber-500 text-amber-500 px-8 py-2 rounded-[40px] font-medium hover:rounded-xl sm:hover:saturate-150"
+          class="bg-amber-500 px-8 py-2 rounded-[40px] font-medium hover:rounded-xl sm:hover:saturate-150"
         >
           Cancel
         </button>

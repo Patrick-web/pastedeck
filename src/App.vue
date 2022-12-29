@@ -16,46 +16,52 @@
     <div
       class="sm:w-[75%] relative w-full h-full px-0 sm:px-10 flex flex-col items-center"
     >
-      <LiveIndicator v-if="socketConnected" :peers="peers"/>
-    <transition enter-active-class="animate__animated animate__faster animate__slideInDown">
-      <paste-type-switcher
-        v-if="pastes.length > 0"
-        @showPastesOfType="(type) => (activePasteType = type)"
+      <LiveIndicator v-if="socketConnected" :peers="peers" />
+      <transition
+        enter-active-class="animate__animated animate__faster animate__slideInDown"
+      >
+        <paste-type-switcher
+          v-if="pastes.length > 0"
+          @showPastesOfType="(type) => (activePasteType = type)"
+        />
+      </transition>
+      <SearchBox
+        v-if="!showAuthContainer"
+        @openPaste="(paste) => setPasteToView(paste)"
+        @pasteToEdit="(paste) => setPasteToEdit(paste)"
+        @pasteToDelete="(paste) => setPasteToDelete(paste)"
       />
-    </transition>
       <div
         ref="pastesWrapper"
-        class="pastesWrapper w-full gap-4 grid justify-center items-stretch xl:grid-cols-3 sm:grid-cols-2 pt-5 pb-40 sm:pb-10 px-5 overflow-y-auto"
+        class="pastesWrapper w-full gap-4 grid justify-center items-stretch xl:grid-cols-3 sm:grid-cols-2 pt-2 pb-40 sm:pb-10 px-5 overflow-y-auto"
       >
-    
-
-      <!-- skeleton-loaders -->
+        <!-- skeleton-loaders -->
         <div
           class="skeleton-loaders gap-4 sm:w-[65vw] w-[100vw] grid xl:grid-cols-3 sm:grid-cols-3 h-full"
           v-if="fetchingPastes"
         >
-            <div
-              v-for="i in 60"
-              :key="i"
-              class="skeleton-box w-full h-[100px] rounded-xl"
-            ></div>
+          <div
+            v-for="i in 60"
+            :key="i"
+            class="skeleton-box w-full h-[100px] rounded-xl"
+          ></div>
         </div>
-      <!-- skeleton-loaders -->
-      
-      <!-- Uploaded Pastes -->
-          <transition-group
-            enter-active-class="animate__animated animate__fadeInDown"
-          >
-            <paste-card
-              v-for="paste in filteredPastes"
-              :key="paste.id"
-              :paste="paste"
-              @openPaste="setPasteToView(paste)"
-              @pasteToEdit="setPasteToEdit(paste)"
-              @pasteToDelete="setPasteToDelete(paste)"
-            />
-          </transition-group>
-      <!-- Uploaded Pastes -->
+        <!-- skeleton-loaders -->
+
+        <!-- Uploaded Pastes -->
+        <transition-group
+          enter-active-class="animate__animated animate__fadeInDown"
+        >
+          <paste-card
+            v-for="paste in filteredPastes"
+            :key="paste.id"
+            :paste="paste"
+            @openPaste="setPasteToView(paste)"
+            @pasteToEdit="setPasteToEdit(paste)"
+            @pasteToDelete="setPasteToDelete(paste)"
+          />
+        </transition-group>
+        <!-- Uploaded Pastes -->
       </div>
       <PasteUpdater
         v-if="pasteToEdit"
@@ -115,6 +121,7 @@ import PasteViewer from "./components/PasteViewer.vue";
 import PasteUpdater from "./components/PasteUpdater.vue";
 import PasteDeleter from "./components/PasteDeleter.vue";
 import LiveIndicator from "./components/LiveIndicator.vue";
+import SearchBox from "./components/SearchBox.vue";
 
 import { supabase, getPaginatedPastes, getPages } from "./supabase/index.js";
 
@@ -136,7 +143,7 @@ export default {
       pasteToEdit: null,
       pasteToDelete: null,
       socketConnected: false,
-      peers:[],
+      peers: [],
     };
   },
   computed: {
@@ -174,9 +181,9 @@ export default {
         })
         .subscribe();
     },
-    async fetchPages(){
+    async fetchPages() {
       this.pages = await getPages();
-      this.getPastes()
+      this.getPastes();
     },
     async getPastes() {
       this.pastes = [];
@@ -221,43 +228,46 @@ export default {
     PasteUpdater,
     PasteDeleter,
     LiveIndicator,
+    SearchBox,
   },
   async mounted() {
-    const socket = io("wss://pastedeck.deno.dev")
+    const socket = io("wss://pastedeck.deno.dev");
     window.socket = socket;
 
-    socket.on("connection-success",(data)=>{
-      console.log(data)
-      this.socketConnected = true
-      this.peers = data.clients
-    })
-
-    socket.on('new-client-connected', (data) => {
+    socket.on("connection-success", (data) => {
       console.log(data);
-      this.peers.push(data.id)
+      this.socketConnected = true;
+      this.peers = data.clients;
     });
 
-    socket.on('client-disconneted', (data) => {
+    socket.on("new-client-connected", (data) => {
       console.log(data);
-      this.peers = this.peers.filter(peer=>peer!=data.id)
+      this.peers.push(data.id);
     });
 
-    socket.on('disconnect', () => {
-      console.log('Disconnected from server');
-      this.socketConnected = false
+    socket.on("client-disconneted", (data) => {
+      console.log(data);
+      this.peers = this.peers.filter((peer) => peer != data.id);
     });
 
-    socket.on("new-paste",(paste)=>{
-      console.log("New Paste")
-      console.log(paste)
-      if(paste.paste_type === "file" || paste.paste_type === "image"){
+    socket.on("disconnect", () => {
+      console.log("Disconnected from server");
+      this.socketConnected = false;
+    });
+
+    socket.on("new-paste", (paste) => {
+      console.log("New Paste");
+      console.log(paste);
+      if (paste.paste_type === "file" || paste.paste_type === "image") {
         // Create a file object from the buffer or string
-        const file = new File([paste.file_buffer], paste.file_name, { type: paste.file_type });
+        const file = new File([paste.file_buffer], paste.file_name, {
+          type: paste.file_type,
+        });
         paste["file_url"] = URL.createObjectURL(file);
       }
-      console.log(paste)
-      this.pastes.unshift(paste)
-    })
+      console.log(paste);
+      this.pastes.unshift(paste);
+    });
   },
 };
 </script>
