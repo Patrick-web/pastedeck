@@ -61,7 +61,7 @@
             :src="linkPreview.image"
             class="h-[100px] w-full object-cover rounded-xl hover:rounded-2xl"
           />
-          <p class="text-sm">{{ linkPreview.title }}</p>
+          <p class="text-sm">{{ linkPreview.title.replace(/ - DEV Community.*/,'') }}</p>
           <p class="font-light text-sm">
             {{
               linkPreview.description.length > 100
