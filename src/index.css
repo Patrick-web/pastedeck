@@ -6,37 +6,37 @@
 }
 
 @layer utilities {
-  .triangle-clip {
-    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-  }
+	.triangle-clip {
+		clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+	}
 }
 
 @layer components {
-  .center-abs {
-    @apply absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2;
-  }
-  .center-y-abs {
-    @apply absolute top-1/2 transform -translate-y-1/2;
-  }
-  .center-x-abs {
-    @apply absolute left-1/2 transform -translate-x-1/2;
-  }
-  .upload-container {
-    @apply flex flex-col justify-between relative items-center sm:gap-5 gap-3 pt-3 pb-8 px-3 bg-base-color xl:drop-shadow-xl w-full sm:h-screen h-[90%] rounded-3xl sm:rounded-none;
-  }
-  .paste-type {
-    @apply w-full cursor-pointer relative flex justify-center items-center w-[80%];
-  }
-  .paste-type-text {
-    @apply text-sm sm:text-base font-normal z-10 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2;
-  }
-  .paste-box {
-    @apply grow w-full;
-  }
-  .paste-type-switcher {
-    @apply flex flex-col justify-center items-center cursor-pointer px-2 py-1;
-  }
-  .modal {
-    @apply fixed top-0 left-0 w-screen h-screen backdrop-blur sm:py-5 inset-0 z-40 flex justify-center items-center bg-[rgba(0,0,0,0.25)] p-8;
-  }
+	.center-abs {
+		@apply absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2;
+	}
+	.center-y-abs {
+		@apply absolute top-1/2 transform -translate-y-1/2;
+	}
+	.center-x-abs {
+		@apply absolute left-1/2 transform -translate-x-1/2;
+	}
+	.upload-container {
+		@apply flex  relative sm:gap-5 gap-3 pt-3 pb-8 px-3 bg-base-color xl:drop-shadow-xl w-full sm:h-screen h-[90%] rounded-3xl sm:rounded-none;
+	}
+	.paste-type {
+		@apply w-full cursor-pointer relative flex justify-center items-center w-[80%];
+	}
+	.paste-type-text {
+		@apply text-sm sm:text-base font-normal z-10 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2;
+	}
+	.paste-box {
+		@apply grow w-full;
+	}
+	.paste-type-switcher {
+		@apply flex flex-col justify-center items-center cursor-pointer px-2 py-1;
+	}
+	.modal {
+		@apply fixed top-0 left-0 w-screen h-screen backdrop-blur sm:py-5 inset-0 z-40 flex justify-center items-center bg-[rgba(0,0,0,0.25)] p-8;
+	}
 }
